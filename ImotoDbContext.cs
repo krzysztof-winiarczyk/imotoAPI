@@ -68,14 +68,36 @@ namespace imotoAPI.Entities
             //Annoucement
             setFieldsOfAnnoucement(modelBuilder);
             setFieldsOfAnnoucementStatus(modelBuilder);
+            setFieldsOfAnnoucement_CarStatus(modelBuilder);
             setFieldsOfWatchedAnnoucement(modelBuilder);
+            
+        }
+
+        private static void setFieldsOfAnnoucement_CarStatus(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Annoucement_CarStatus>()
+                .HasOne(e => e.Annoucement)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Annoucement_CarStatus>()
+               .HasOne(e => e.CarStatus)
+               .WithMany()
+               .OnDelete(DeleteBehavior.Restrict);
         }
 
         private static void setFieldsOfWatchedAnnoucement(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WatchedAnnoucement>()
-                            .Property(e => e.Date)
-                            .IsRequired();
+                .Property(e => e.Date)
+                .IsRequired();
+
+            modelBuilder.Entity<WatchedAnnoucement>()
+                .HasOne(e => e.User)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            
         }
 
         private static void setFieldsOfAnnoucement(ModelBuilder modelBuilder)
@@ -273,8 +295,18 @@ namespace imotoAPI.Entities
         private static void setFieldsOfWatchedUser(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WatchedUser>()
-                            .Property(e => e.DateOfStart)
-                            .IsRequired();
+                .Property(e => e.DateOfStart)
+                .IsRequired();
+
+            modelBuilder.Entity<WatchedUser>()
+                .HasOne(e => e.Follower)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WatchedUser>()
+                .HasOne(e => e.Watched)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private static void setFieldsOfUserType(ModelBuilder modelBuilder)
