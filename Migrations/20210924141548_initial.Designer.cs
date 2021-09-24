@@ -10,7 +10,7 @@ using imotoAPI.Entities;
 namespace imotoAPI.Migrations
 {
     [DbContext(typeof(ImotoDbContext))]
-    [Migration("20210903212037_initial")]
+    [Migration("20210924141548_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

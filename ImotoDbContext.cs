@@ -9,7 +9,7 @@ namespace imotoAPI.Entities
     public class ImotoDbContext : DbContext
     {
         private string _connectionString =
-            "Server=DESKTOP-B44JBKM;Database=imotoDb;Trusted_Connection=True;";
+            "Server=LAPTOP-NPDMISHQ;Database=imotoDb;Trusted_Connection=True;";
 
         public DbSet<Annoucement> Annoucements { get; set; }
         public DbSet<Annoucement_CarEquipment> Annoucement_CarEquipments { get; set; }
