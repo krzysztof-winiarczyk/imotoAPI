@@ -14,7 +14,6 @@ namespace imotoAPI.Entities
         public DbSet<Annoucement> Annoucements { get; set; }
         public DbSet<Annoucement_CarEquipment> Annoucement_CarEquipments { get; set; }
         public DbSet<Annoucement_CarStatus> Annoucement_CarStatuses { get; set; }
-        public DbSet<AnnoucementStatus> AnnoucementStatuses { get; set; }
         public DbSet<CarBodywork> CarBodyworks { get; set; }
         public DbSet<CarBrand> CarBrands { get; set; }
         public DbSet<CarClass> CarClasses { get; set; }
@@ -67,24 +66,10 @@ namespace imotoAPI.Entities
 
             //Annoucement
             setFieldsOfAnnoucement(modelBuilder);
-            setFieldsOfAnnoucementStatus(modelBuilder);
-            setFieldsOfAnnoucement_CarStatus(modelBuilder);
             setFieldsOfWatchedAnnoucement(modelBuilder);
-            
+
         }
 
-        private static void setFieldsOfAnnoucement_CarStatus(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Annoucement_CarStatus>()
-                .HasOne(e => e.Annoucement)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Annoucement_CarStatus>()
-               .HasOne(e => e.CarStatus)
-               .WithMany()
-               .OnDelete(DeleteBehavior.Restrict);
-        }
 
         private static void setFieldsOfWatchedAnnoucement(ModelBuilder modelBuilder)
         {
@@ -96,15 +81,13 @@ namespace imotoAPI.Entities
                 .HasOne(e => e.User)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
-
-            
         }
 
         private static void setFieldsOfAnnoucement(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Annoucement>()
-                            .Property(e => e.CarBrandSpare)
-                            .HasMaxLength(45);
+                .Property(e => e.CarBrandSpare)
+                .HasMaxLength(45);
 
             modelBuilder.Entity<Annoucement>()
                 .Property(e => e.CarModelSpare)
@@ -126,9 +109,9 @@ namespace imotoAPI.Entities
         private static void setFieldsOfCarStatus(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarStatus>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
 
             modelBuilder.Entity<CarStatus>()
                .Property(e => e.Description)
@@ -138,9 +121,9 @@ namespace imotoAPI.Entities
         private static void setFieldsOfCarEquipment(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarEquipment>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(255);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(255);
 
             modelBuilder.Entity<CarEquipment>()
                .Property(e => e.Description)
@@ -150,25 +133,25 @@ namespace imotoAPI.Entities
         private static void setFieldsOfCarModel(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarModel>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
         }
 
         private static void setFieldsOfCarBrand(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarBrand>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
         }
 
         private static void setFieldsOfCarClass(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarClass>()
-                           .Property(e => e.Name)
-                           .IsRequired()
-                           .HasMaxLength(3);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(3);
 
             modelBuilder.Entity<CarClass>()
                .Property(e => e.Name)
@@ -178,17 +161,17 @@ namespace imotoAPI.Entities
         private static void setFieldsOfCarColor(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarBodywork>()
-                           .Property(e => e.Name)
-                           .IsRequired()
-                           .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
         }
 
         private static void setFieldsOfCarBodywork(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarBodywork>()
-                           .Property(e => e.Name)
-                           .IsRequired()
-                           .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
 
             modelBuilder.Entity<CarBodywork>()
                .Property(e => e.Link)
@@ -211,41 +194,29 @@ namespace imotoAPI.Entities
         private static void setFieldsOfCarFuel(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarFuel>()
-                           .Property(e => e.Name)
-                           .IsRequired()
-                           .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
         }
 
         private static void setFieldsOfCarDrive(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarDrive>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
 
             modelBuilder.Entity<CarDrive>()
                 .Property(e => e.Acronym)
                 .HasMaxLength(45);
         }
 
-        private static void setFieldsOfAnnoucementStatus(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<AnnoucementStatus>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
-
-            modelBuilder.Entity<AnnoucementStatus>()
-                .Property(e => e.Name)
-                .HasMaxLength(255);
-        }
-
         private static void setFieldsOfCarTransmission(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CarTransmission>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
 
             modelBuilder.Entity<CarTransmission>()
                .Property(e => e.Description)
@@ -255,9 +226,9 @@ namespace imotoAPI.Entities
         private static void setFieldsOfModeratorType(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ModeratorType>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
 
             modelBuilder.Entity<ModeratorType>()
                 .Property(e => e.Description)
@@ -267,9 +238,9 @@ namespace imotoAPI.Entities
         private static void setFieldsOfModerator(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Moderator>()
-                            .Property(e => e.Login)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Login)
+                .IsRequired()
+                .HasMaxLength(45);
 
             modelBuilder.Entity<Moderator>()
                 .Property(e => e.Email)
@@ -312,9 +283,9 @@ namespace imotoAPI.Entities
         private static void setFieldsOfUserType(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserType>()
-                            .Property(e => e.Name)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(45);
 
             modelBuilder.Entity<UserType>()
                 .Property(e => e.Description)
@@ -324,9 +295,9 @@ namespace imotoAPI.Entities
         private static void setFieldsOfPhone(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Phone>()
-                            .Property(e => e.Number)
-                            .IsRequired()
-                            .HasMaxLength(11);
+                .Property(e => e.Number)
+                .IsRequired()
+                .HasMaxLength(11);
 
             modelBuilder.Entity<Phone>()
                 .Property(e => e.Name)
@@ -335,6 +306,15 @@ namespace imotoAPI.Entities
 
         private static void setFieldsOfEnterpriseUser(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<EnterpriseUser>()
+                .HasKey(c => new { c.UserId });
+
+            modelBuilder.Entity<EnterpriseUser>()
+                .HasOne(e => e.User)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<EnterpriseUser>()
                 .Property(e => e.Name)
                 .IsRequired()
@@ -371,6 +351,14 @@ namespace imotoAPI.Entities
         private static void setFieldsOfPrivateUser(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PrivateUser>()
+                .HasKey(c => new { c.UserId });
+
+            modelBuilder.Entity<PrivateUser>()
+                .HasOne(e => e.User)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PrivateUser>()
                 .Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(45);
@@ -406,9 +394,9 @@ namespace imotoAPI.Entities
         private static void setFieldsOfUser(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                            .Property(e => e.Login)
-                            .IsRequired()
-                            .HasMaxLength(45);
+                .Property(e => e.Login)
+                .IsRequired()
+                .HasMaxLength(45);
 
 
             modelBuilder.Entity<User>()
@@ -422,7 +410,7 @@ namespace imotoAPI.Entities
                 .HasMaxLength(255);
         }
 
-        protected override void OnConfiguring 
+        protected override void OnConfiguring
             (DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_connectionString);
