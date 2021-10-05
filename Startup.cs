@@ -41,6 +41,7 @@ namespace imoto
             services.AddScoped<ErrorHandlingMiddleware>();
 
             services.AddScoped<ICarFuelService, CarFuelService>();
+            services.AddScoped<ICarClassService, CarClassService>();
 
         }
 
