@@ -1,4 +1,5 @@
 ﻿using imotoAPI.Entities;
+using imotoAPI.Exceptions;
 using imotoAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,9 @@ namespace imotoAPI.Services
             var carFuel = _dbContext
                 .CarFuels
                 .FirstOrDefault(cf => cf.Id == id);
+
+            if (carFuel is null)
+                throw new NotFoundException("Not found");
 
             carFuel.Name = dto.Name;
             _dbContext.SaveChanges();
