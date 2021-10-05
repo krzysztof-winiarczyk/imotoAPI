@@ -1,4 +1,5 @@
-﻿using imotoAPI.Models;
+﻿using imotoAPI.Entities;
+using imotoAPI.Models;
 using imotoAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -20,21 +21,21 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAll()
+        public ActionResult<IEnumerable<CarClass>> GetAll()
         {
             var carClasses = _service.GetAll();
             return Ok(carClasses);
         }
 
         [HttpPost]
-        public ActionResult Add([FromBody] CarClassDto dto)
+        public ActionResult<CarClass> Add([FromBody] CarClassDto dto)
         {
-            int id = _service.Add(dto);
-            return Ok(id);
+            var carClass = _service.Add(dto);
+            return Ok(carClass);
         }
 
         [HttpPut("{id}")]
-        public ActionResult Edit([FromRoute] int id, [FromBody] CarClassDto dto)
+        public ActionResult<CarClass> Edit([FromRoute] int id, [FromBody] CarClassDto dto)
         {
             var carClass = _service.Edit(id, dto);
             return Ok(carClass);

@@ -36,7 +36,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<CarEquipmentDto> Add([FromRoute] int id, [FromBody] CarEquipmentDto dto)
+        public ActionResult<CarEquipment> Add([FromRoute] int id, [FromBody] CarEquipmentDto dto)
         {
             var edditedCarEquipment = _service.Edit(id, dto);
             return Ok(edditedCarEquipment);

@@ -11,7 +11,7 @@ namespace imotoAPI.Services
     public interface ICarClassService
     {
         public IEnumerable<CarClass> GetAll();
-        public int Add(CarClassDto dto);
+        public CarClass Add(CarClassDto dto);
         public CarClass Edit(int id, CarClassDto dto);
     }
 
@@ -33,7 +33,7 @@ namespace imotoAPI.Services
             return collection;
         }
 
-        public int Add(CarClassDto dto)
+        public CarClass Add(CarClassDto dto)
         {
             CarClass carClass = new CarClass();
             carClass.Name = dto.Name;
@@ -42,7 +42,7 @@ namespace imotoAPI.Services
             _dbContext.Add(carClass);
             _dbContext.SaveChanges();
 
-            return carClass.Id;
+            return carClass;
         }
 
         public CarClass Edit(int id, CarClassDto dto)

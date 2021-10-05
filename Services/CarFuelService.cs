@@ -11,7 +11,7 @@ namespace imotoAPI.Services
     public interface ICarFuelService
     {
         public IEnumerable<CarFuel> GetAll();
-        public int Add(CarFuelDto dto);
+        public CarFuel Add(CarFuelDto dto);
         public CarFuel Edit(CarFuelDto dto, int id);
     }
 
@@ -24,13 +24,13 @@ namespace imotoAPI.Services
             _dbContext = dbContext;
         }
 
-        public int Add(CarFuelDto dto)
+        public CarFuel Add(CarFuelDto dto)
         {
             CarFuel carFuel = new CarFuel();
             carFuel.Name = dto.Name;
             _dbContext.Add(carFuel);
             _dbContext.SaveChanges();
-            return carFuel.Id;
+            return carFuel;
         }
 
         public IEnumerable<CarFuel> GetAll()

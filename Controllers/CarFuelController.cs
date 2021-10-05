@@ -22,21 +22,21 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAll()
+        public ActionResult<IEnumerable<CarFuel>> GetAll()
         {
             var collection = _service.GetAll();
             return Ok(collection);
         }
 
         [HttpPost]
-        public ActionResult AddCarFuel([FromBody] CarFuelDto dto)
+        public ActionResult<CarFuel> AddCarFuel([FromBody] CarFuelDto dto)
         {
-            int id = _service.Add(dto);
-            return Ok(id);
+            var carFuel = _service.Add(dto);
+            return Ok(carFuel);
         }
 
         [HttpPut("{id}")]
-        public ActionResult EditCarFuel ([FromRoute] int id, [FromBody] CarFuelDto dto)
+        public ActionResult<CarFuel> EditCarFuel ([FromRoute] int id, [FromBody] CarFuelDto dto)
         {
             CarFuel edditedCarFuel = _service.Edit(dto, id);
             return Ok(edditedCarFuel);
