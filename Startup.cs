@@ -1,4 +1,5 @@
 using imotoAPI.Entities;
+using imotoAPI.Middleware;
 using imotoAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,8 @@ namespace imoto
             });
 
             services.AddDbContext<ImotoDbContext>();
+
+            services.AddScoped<ErrorHandlingMiddleware>();
 
             services.AddScoped<ICarFuelService, CarFuelService>();
 
