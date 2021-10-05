@@ -1,3 +1,5 @@
+using imotoAPI.Entities;
+using imotoAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +34,11 @@ namespace imoto
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "imoto", Version = "v1" });
             });
+
+            services.AddDbContext<ImotoDbContext>();
+
+            services.AddScoped<ICarFuelService, CarFuelService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
