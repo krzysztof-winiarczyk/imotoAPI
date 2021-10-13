@@ -48,6 +48,7 @@ namespace imoto
             services.AddScoped<ICarYearService, CarYearService>();
             services.AddScoped<ICarColorService, CarColorService>();
             services.AddScoped<ICarStatusSerivce, CarStatusService>();
+            services.AddScoped<ICarCountryService, CarCountryService>();
 
         }
 
