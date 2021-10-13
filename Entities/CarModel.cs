@@ -9,7 +9,7 @@ namespace imotoAPI.Entities
     {
         public int Id { get; set; }
 
-        public int BrandId { get; set; }
+        public int CarBrandId { get; set; }
         public CarBrand CarBrand {get; set;}
 
         public string Name { get; set; }
