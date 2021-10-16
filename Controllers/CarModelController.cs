@@ -21,10 +21,19 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CarModel> AddCarModel([FromBody] CarModelGetDto dto)
+        public ActionResult<CarModelReturnDto> AddCarModel([FromBody] CarModelGetDto dto)
         {
-            var carModel = _carModelService.AddCarModel(dto);
+            var carModelDto = _carModelService.AddCarModel(dto);
+            return carModelDto;
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<CarModel> EditCarModel([FromRoute] int id, [FromBody] CarModelGetDto dto)
+        {
+            var carModel = _carModelService.EditCarModel(id, dto);
             return carModel;
         }
+
+
     }
 }
