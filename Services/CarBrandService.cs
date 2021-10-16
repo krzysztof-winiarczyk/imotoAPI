@@ -11,8 +11,10 @@ namespace imotoAPI.Services
     public interface ICarBrandService
     {
         public IEnumerable<CarBrand> GetAll();
+        public CarBrandWithModelsDto GetCarBrand(int id);
         public CarBrand Add(CarBrandDto dto);
         public CarBrand Edit(int id, CarBrandDto dto);
+
     }
 
     public class CarBrandService : ICarBrandService
@@ -31,6 +33,37 @@ namespace imotoAPI.Services
                 .ToArray();
 
             return collection;
+        }
+
+        public CarBrandWithModelsDto GetCarBrand(int id)
+        {
+            var carBrand =  _dbContext
+                .CarBrands
+                .FirstOrDefault(cb => cb.Id == id);
+
+            var carBrandWithModels = new CarBrandWithModelsDto();
+            carBrandWithModels.Id = carBrand.Id;
+            carBrandWithModels.Name = carBrand.Name;
+
+            var carModels = _dbContext
+                .CarModels
+                .Where(cm => cm.CarBrandId == id)
+                .ToList();
+
+            var carModelsDtos = new List<CarModelReturnDto>();
+
+            foreach (CarModel cm in carModels)
+            {
+                var carModelDto = new CarModelReturnDto();
+                carModelDto.Id = cm.Id;
+                carModelDto.Name = cm.Name;
+
+                carModelsDtos.Add(carModelDto);
+            }
+
+            carBrandWithModels.Models = carModelsDtos;
+            return carBrandWithModels;
+
         }
 
         public CarBrand Add(CarBrandDto dto)

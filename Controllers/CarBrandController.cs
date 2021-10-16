@@ -28,6 +28,13 @@ namespace imotoAPI.Controllers
             return Ok(allBrands);
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<CarBrandWithModelsDto> GetCarBrand([FromRoute] int id)
+        {
+            var carBrandWithModels = _carBrandService.GetCarBrand(id);
+            return carBrandWithModels;
+        }
+
         [HttpPost]
         public ActionResult<CarBrand> AddCarBrand(CarBrandDto dto)
         {

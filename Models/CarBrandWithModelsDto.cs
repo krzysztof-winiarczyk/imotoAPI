@@ -1,19 +1,16 @@
-﻿using System;
+﻿using imotoAPI.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace imotoAPI.Entities
+namespace imotoAPI.Models
 {
-    public class CarModel
+    public class CarBrandWithModelsDto
     {
         public int Id { get; set; }
-
-        public int CarBrandId { get; set; }
-        public virtual CarBrand CarBrand {get; set;}
-
         public string Name { get; set; }
-
+        public IEnumerable<CarModelReturnDto> Models { get; set; }
 
     }
 }

@@ -9,7 +9,7 @@ namespace imotoAPI.Services
 {
     public interface ICarModelService
     {
-
+        public CarModel AddCarModel(CarModelGetDto dto);
     }
 
     public class CarModelService : ICarModelService
@@ -19,6 +19,18 @@ namespace imotoAPI.Services
         public CarModelService(ImotoDbContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public CarModel AddCarModel(CarModelGetDto dto)
+        {
+            var carModel = new CarModel();
+            carModel.Name = dto.Name;
+            carModel.CarBrandId = dto.CarBrandId;
+
+            _dbContext.Add(carModel);
+            _dbContext.SaveChanges();
+
+            return carModel;
         }
     }
 }

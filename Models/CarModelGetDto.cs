@@ -3,17 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace imotoAPI.Entities
+namespace imotoAPI.Models
 {
-    public class CarModel
+    public class CarModelGetDto
     {
-        public int Id { get; set; }
-
         public int CarBrandId { get; set; }
-        public virtual CarBrand CarBrand {get; set;}
-
         public string Name { get; set; }
-
-
     }
 }
