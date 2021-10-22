@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace imotoAPI.Models
 {
-    public class CarModelReturnDto
+    public class CarEquipmentIdDto
     {
-        public int? Id { get; set; }
-        public string Name { get; set; }
+        public int CarEquipmentId { get; set; }
     }
 }

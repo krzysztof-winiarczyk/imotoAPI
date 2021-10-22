@@ -20,6 +20,11 @@ namespace imotoAPI.Middleware
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
+            catch(Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(dbUpdateException.Message);
+            }
         }
     }
 }
