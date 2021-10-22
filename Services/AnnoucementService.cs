@@ -130,12 +130,12 @@ namespace imotoAPI.Services
             dto.Mileage = annocuement.Mileage;
             dto.Description = annocuement.Description;
 
-            //TODO: include car equipment
-            //TODO: include car statuses
+            dto.CarEquipment = this.GetEquipmentOfAnnoucement(annocuement.Id);
+            dto.CarStatuses = GetStatusesOfAnnoucement(annocuement.Id);
 
             return dto;
         }
-
+        
         public Annoucement AddAnnoucement(AnnoucementGetDto dto)
         {
             var annoucement = new Annoucement();
@@ -251,5 +251,42 @@ namespace imotoAPI.Services
         }
 
 
+        private List<CarStatus> GetStatusesOfAnnoucement(int annoucementId)
+        {
+            var annoucementStatuses = _dbContext
+                .Annoucement_CarStatuses
+                .Where(cs => cs.AnnoucementId == annoucementId)
+                .ToList();
+
+            List<CarStatus> carStatuses = new();
+            foreach (Annoucement_CarStatus aCS in annoucementStatuses)
+            {
+                var status = _dbContext
+                    .CarStatuses
+                    .FirstOrDefault(cs => cs.Id == aCS.CarStatusId);
+                carStatuses.Add(status);
+            }
+
+            return carStatuses;
+        }
+
+        private List<CarEquipment> GetEquipmentOfAnnoucement(int annoucementId)
+        {
+            var annoucementEquipment = _dbContext
+                .Annoucement_CarEquipments
+                .Where(ce => ce.AnnoucementId == annoucementId)
+                .ToList();
+
+            List<CarEquipment> carEquipment = new();
+            foreach (Annoucement_CarEquipment aCE in annoucementEquipment)
+            {
+                var equipment = _dbContext
+                    .CarEquipment
+                    .FirstOrDefault(ce => ce.Id == aCE.CarEquipmentId);
+                carEquipment.Add(equipment);
+            }
+
+            return carEquipment;
+        }
     }
 }
