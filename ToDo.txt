@@ -5,5 +5,8 @@ dezaktywowanie kont i ogłoszeń
 dodać statusy do ogłoszeń
 dodać statusy do meoderatorów
 dodać statusy do użytkowników
+moderator: nie pozwalać na używanie tego samego loginu
+zmiana hasła moderatora: nie pozwolić aby nowe hasło było takie samo jak stare
+zmienić Ok na Created w statusach 200 na 201
 
 DONE:

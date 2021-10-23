@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace imotoAPI.Middleware
@@ -24,6 +25,16 @@ namespace imotoAPI.Middleware
             {
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsync(incorrectLoginException.Message);
+            }
+            catch (LoginNotUniqueException loginNotUniqueException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(loginNotUniqueException.Message);
+            }
+            catch (OldNewPasswordException oldNewPasswordException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(oldNewPasswordException.Message);
             }
             catch(Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateException)
             {
