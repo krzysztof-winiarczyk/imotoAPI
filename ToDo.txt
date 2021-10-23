@@ -1,0 +1,9 @@
+﻿TODO:
+tabela z lokalizacjami
+fluent validation (?)
+dezaktywowanie kont i ogłoszeń
+dodać statusy do ogłoszeń
+dodać statusy do meoderatorów
+dodać statusy do użytkowników
+
+DONE:
