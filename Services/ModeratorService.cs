@@ -68,6 +68,9 @@ namespace imotoAPI.Services
 
         public ModeratorReturnDto Add(ModeratorGetDto dto)
         {
+            if (!IsLoginFree(dto.Login))
+                throw new LoginNotUniqueException("Login is taken");
+
             var moderator = new Moderator()
             {
                 TypeId = dto.TypeId,
@@ -117,9 +120,14 @@ namespace imotoAPI.Services
             var result = _passwordHasher.VerifyHashedPassword(moderator, moderator.PasswordHash, passwordDto.OldPassword);
             if (result == PasswordVerificationResult.Success)
             {
-                var newHashedPassword = _passwordHasher.HashPassword(moderator, passwordDto.NewPassword);
-                moderator.PasswordHash = newHashedPassword;
-                _dbContext.SaveChanges();
+                if (passwordDto.OldPassword == passwordDto.NewPassword)
+                    throw new OldNewPasswordException("New password must differ form old password");
+                else
+                {
+                    var newHashedPassword = _passwordHasher.HashPassword(moderator, passwordDto.NewPassword);
+                    moderator.PasswordHash = newHashedPassword;
+                    _dbContext.SaveChanges();
+                }
             }
             else
             {
@@ -159,7 +167,17 @@ namespace imotoAPI.Services
             moderatorDto.PhoneNumber = moderator.PhoneNumber;
             return moderatorDto;
         }
+
+        private bool IsLoginFree (string login)
+        {
+            var moderator = _dbContext
+                .Moderators
+                .FirstOrDefault(m => m.Login == login);
+
+            if (moderator is null)
+                return true;
+            else
+                return false;
+        }
     }
-
-
 }
