@@ -4,6 +4,7 @@ using imotoAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +56,9 @@ namespace imoto
             services.AddScoped<IAnnoucementService, AnnoucementService>();
 
             services.AddScoped<IModertorTypeService, ModeratorTypeService>();
+            services.AddScoped<IModeratorService, ModeratorService>();
+
+            services.AddScoped<IPasswordHasher<Moderator>, PasswordHasher<Moderator>>();
 
         }
 
