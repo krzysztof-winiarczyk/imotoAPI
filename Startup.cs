@@ -54,6 +54,8 @@ namespace imoto
             services.AddScoped<ICarModelService, CarModelService>();
             services.AddScoped<IAnnoucementService, AnnoucementService>();
 
+            services.AddScoped<IModertorTypeService, ModeratorTypeService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
