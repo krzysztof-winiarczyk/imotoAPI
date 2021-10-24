@@ -59,6 +59,7 @@ namespace imoto
             services.AddScoped<IModeratorService, ModeratorService>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserTypeService, UserTypeService>();
 
             services.AddScoped<IPasswordHasher<Moderator>, PasswordHasher<Moderator>>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
