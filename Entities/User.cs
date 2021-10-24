@@ -9,7 +9,7 @@ namespace imotoAPI.Entities
     {
         public int Id { get; set; }
 
-        public int TypeId { get; set; }
+        public int UserTypeId { get; set; }
         public UserType UserType { get; set; }
 
         public string Login { get; set; }

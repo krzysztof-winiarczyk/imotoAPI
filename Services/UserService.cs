@@ -71,7 +71,7 @@ namespace imotoAPI.Services
 
             var user = new User()
             {
-                TypeId = dto.TypeId,
+                UserTypeId = dto.TypeId,
                 Login = dto.Login,
                 Email = dto.Email
             };
@@ -137,7 +137,7 @@ namespace imotoAPI.Services
             var userDto = new UserReturnDto()
             {
                 Id = user.Id,
-                TypeId = user.TypeId,
+                TypeId = user.UserTypeId,
                 UserType = user.UserType,
                 Login = user.Login,
                 Email = user.Email

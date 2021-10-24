@@ -6,8 +6,9 @@ dodać statusy do ogłoszeń
 dodać statusy do meoderatorów
 dodać statusy do użytkowników
 zmienić Ok na Created w statusach 200 na 201
-nie działa constraint User-UserType
+dodać walidację adresów email
 
 DONE:
 zmiana hasła moderatora: nie pozwolić aby nowe hasło było takie samo jak stare
 moderator: nie pozwalać na używanie tego samego loginu
+nie działa constraint User-UserType

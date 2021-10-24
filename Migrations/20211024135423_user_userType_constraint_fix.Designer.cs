@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using imotoAPI.Entities;
 
 namespace imotoAPI.Migrations
 {
     [DbContext(typeof(ImotoDbContext))]
-    partial class ImotoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211024135423_user_userType_constraint_fix")]
+    partial class user_userType_constraint_fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
