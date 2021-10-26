@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Exceptions;
 using imotoAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace imotoAPI.Services
 
     public interface IWatchedUserService
     {
-        public WatchedUser Get(WatchedUserDto dto);
-        public WatchedUser Add(WatchedUserDto dto);
+        public IEnumerable<UserReturnDto> GetWatchedUsers(int followerId);
+        public WatchedUserReturnDto Add(WatchedUserDto dto);
         public void Delete(WatchedUserDto dto);
     }
 
@@ -25,19 +26,34 @@ namespace imotoAPI.Services
             _dbContext = dbContext;
         }
 
-        public WatchedUser Get(WatchedUserDto dto)
+        public IEnumerable<UserReturnDto> GetWatchedUsers(int followerId)
         {
-            var watchedUser = _dbContext.
-                WatchedUsers
-                .FirstOrDefault(wu => wu.FollowerId == dto.FollowerId && wu.WatchedId == dto.WatchedId);
+            var watchedUsers = _dbContext
+                .WatchedUsers
+                .Include(wu => wu.Watched)
+                .Include(wu => wu.Watched.UserType)
+                .Where(wu => wu.FollowerId == followerId)
+                .ToList();
 
-            if (watchedUser is null)
-                throw new NotFoundException("Not found");
+            var users = new List<UserReturnDto>();
 
-            return watchedUser;
+            foreach (WatchedUser wu in watchedUsers)
+            {
+                var user = new UserReturnDto()
+                {
+                    Id = wu.Watched.Id,
+                    TypeId = wu.Watched.UserTypeId,
+                    UserType = wu.Watched.UserType,
+                    Login = null,
+                    Email = wu.Watched.Email
+                };
+                users.Add(user);
+            }
+
+            return users;
         }
 
-        public WatchedUser Add(WatchedUserDto dto)
+        public WatchedUserReturnDto Add(WatchedUserDto dto)
         {
             var watchedUser = _dbContext.
                WatchedUsers
@@ -49,14 +65,15 @@ namespace imotoAPI.Services
             watchedUser = new WatchedUser()
             {
                 FollowerId = dto.FollowerId,
-                WatchedId = dto.FollowerId
+                WatchedId = dto.WatchedId
             };
             watchedUser.DateOfStart = DateTime.Now;
 
             _dbContext.Add(watchedUser);
             _dbContext.SaveChanges();
 
-            return watchedUser;
+            var watchedUserDto = MapToReturnDto(watchedUser);
+            return watchedUserDto;
         }
 
         public void Delete(WatchedUserDto dto)
@@ -70,6 +87,18 @@ namespace imotoAPI.Services
 
             _dbContext.WatchedUsers.Remove(watchedUser);
             _dbContext.SaveChanges();
+        }
+
+        private WatchedUserReturnDto MapToReturnDto(WatchedUser watchedUser)
+        {
+            var watchedUserDto = new WatchedUserReturnDto()
+            {
+                Id = watchedUser.Id,
+                FollowerId = watchedUser.FollowerId,
+                WatchedId = watchedUser.WatchedId,
+                DateOfStart = watchedUser.DateOfStart
+            };
+            return watchedUserDto;
         }
     }
 }
