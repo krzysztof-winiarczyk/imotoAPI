@@ -12,7 +12,7 @@ namespace imotoAPI.Services
 
     public interface IWatchedUserService
     {
-        public IEnumerable<UserReturnDto> GetWatchedUsers(int followerId);
+        public IEnumerable<UserReturnForAdminDto> GetWatchedUsers(int followerId);
         public WatchedUserReturnDto Add(WatchedUserDto dto);
         public void Delete(WatchedUserDto dto);
     }
@@ -26,7 +26,7 @@ namespace imotoAPI.Services
             _dbContext = dbContext;
         }
 
-        public IEnumerable<UserReturnDto> GetWatchedUsers(int followerId)
+        public IEnumerable<UserReturnForAdminDto> GetWatchedUsers(int followerId)
         {
             var watchedUsers = _dbContext
                 .WatchedUsers
@@ -35,11 +35,11 @@ namespace imotoAPI.Services
                 .Where(wu => wu.FollowerId == followerId)
                 .ToList();
 
-            var users = new List<UserReturnDto>();
+            var users = new List<UserReturnForAdminDto>();
 
             foreach (WatchedUser wu in watchedUsers)
             {
-                var user = new UserReturnDto()
+                var user = new UserReturnForAdminDto()
                 {
                     Id = wu.Watched.Id,
                     TypeId = wu.Watched.UserTypeId,

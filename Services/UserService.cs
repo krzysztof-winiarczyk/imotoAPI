@@ -14,10 +14,10 @@ namespace imotoAPI.Services
 {
     public interface IUserService
     {
-        public IEnumerable<UserReturnDto> GetAll();
-        public UserReturnDto GetById(int id);
-        public UserReturnDto Add(UserGetDto dto);
-        public UserReturnDto UpdateContactInfo(int id, UserUpdateDto dto);
+        public IEnumerable<UserReturnForAdminDto> GetAll();
+        public UserReturnForAdminDto GetById(int id);
+        public UserReturnForAdminDto Add(UserGetDto dto);
+        public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
     }
 
@@ -34,14 +34,14 @@ namespace imotoAPI.Services
             _passwordHasher = passwordHasher;
         }
 
-        public IEnumerable<UserReturnDto> GetAll()
+        public IEnumerable<UserReturnForAdminDto> GetAll()
         {
             var users = _dbContext
                 .Users
                 .Include(u => u.UserType)
                 .ToList();
 
-            List<UserReturnDto> usersDtos = new();
+            List<UserReturnForAdminDto> usersDtos = new();
             foreach(User u in users)
             {
                 var userDto = this.MapToReturnDto(u);
@@ -50,7 +50,7 @@ namespace imotoAPI.Services
             return usersDtos;
         }
 
-        public UserReturnDto GetById(int id)
+        public UserReturnForAdminDto GetById(int id)
         {
             var user = _dbContext
                 .Users
@@ -64,7 +64,7 @@ namespace imotoAPI.Services
             return userDto;
         }
 
-        public UserReturnDto Add(UserGetDto dto)
+        public UserReturnForAdminDto Add(UserGetDto dto)
         {
             if (!IsLoginFree(dto.Login))
                 throw new LoginNotUniqueException("Login is taken");
@@ -85,7 +85,7 @@ namespace imotoAPI.Services
             return returnDto;
         }
 
-        public UserReturnDto UpdateContactInfo(int id, UserUpdateDto dto)
+        public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto)
         {
             var user = _dbContext
                 .Users
@@ -132,9 +132,9 @@ namespace imotoAPI.Services
 
 
 
-        private UserReturnDto MapToReturnDto (User user)
+        private UserReturnForAdminDto MapToReturnDto (User user)
         {
-            var userDto = new UserReturnDto()
+            var userDto = new UserReturnForAdminDto()
             {
                 Id = user.Id,
                 TypeId = user.UserTypeId,

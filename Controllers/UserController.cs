@@ -21,28 +21,28 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<UserReturnDto>> GetAll()
+        public ActionResult<IEnumerable<UserReturnForAdminDto>> GetAll()
         {
             var users = _service.GetAll();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<UserReturnDto> GetAll([FromRoute] int id)
+        public ActionResult<UserReturnForAdminDto> GetAll([FromRoute] int id)
         {
             var user = _service.GetById(id);
             return Ok(user);
         }
 
         [HttpPost]
-        public ActionResult<UserReturnDto> Add([FromBody] UserGetDto dto)
+        public ActionResult<UserReturnForAdminDto> Add([FromBody] UserGetDto dto)
         {
             var user = _service.Add(dto);
             return Ok(user);
         }
 
         [HttpPut("{id}/contactInfo")]
-        public ActionResult<UserReturnDto> UpdateContactInfo([FromRoute] int id, [FromBody] UserUpdateDto dto)
+        public ActionResult<UserReturnForAdminDto> UpdateContactInfo([FromRoute] int id, [FromBody] UserUpdateDto dto)
         {
             var user = _service.UpdateContactInfo(id, dto);
             return Ok(user);
