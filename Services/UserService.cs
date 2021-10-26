@@ -15,7 +15,7 @@ namespace imotoAPI.Services
     public interface IUserService
     {
         public IEnumerable<UserReturnForAdminDto> GetAll();
-        public UserReturnForAdminDto GetById(int id);
+        public UserReturnDto GetById(int id);
         public UserReturnForAdminDto Add(UserGetDto dto);
         public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
@@ -34,6 +34,7 @@ namespace imotoAPI.Services
             _passwordHasher = passwordHasher;
         }
 
+        //for admin
         public IEnumerable<UserReturnForAdminDto> GetAll()
         {
             var users = _dbContext
@@ -44,13 +45,14 @@ namespace imotoAPI.Services
             List<UserReturnForAdminDto> usersDtos = new();
             foreach(User u in users)
             {
-                var userDto = this.MapToReturnDto(u);
+                var userDto = MapToReturnForAdminDto(u);
                 usersDtos.Add(userDto);
             }
             return usersDtos;
         }
 
-        public UserReturnForAdminDto GetById(int id)
+        //for all (public profile)
+        public UserReturnDto GetById(int id)
         {
             var user = _dbContext
                 .Users
@@ -60,7 +62,7 @@ namespace imotoAPI.Services
             if (user is null)
                 throw new NotFoundException("Not found");
 
-            var userDto = this.MapToReturnDto(user);
+            var userDto = MapToReturnDto(user);
             return userDto;
         }
 
@@ -73,7 +75,16 @@ namespace imotoAPI.Services
             {
                 UserTypeId = dto.TypeId,
                 Login = dto.Login,
-                Email = dto.Email
+                Email = dto.Email,
+                Name = dto.Name,
+                Surname = dto.Surname,
+                City = dto.City,
+                Street = dto.Street,
+                HouseNumber = dto.HouseNumber,
+                ApartmentNumber = dto.ApartmentNumber,
+                PostalCode = dto.PostalCode,
+                PhoneNumber = dto.PhoneNumber,
+                WebAddress = dto.WebAddress
             };
             var hashedPassword = _passwordHasher.HashPassword(user, dto.Password);
             user.PasswordHash = hashedPassword;
@@ -81,7 +92,7 @@ namespace imotoAPI.Services
             _dbContext.Add(user);
             _dbContext.SaveChanges();
 
-            var returnDto = MapToReturnDto(user);
+            var returnDto = MapToReturnForAdminDto(user);
             return returnDto;
         }
 
@@ -96,9 +107,18 @@ namespace imotoAPI.Services
                 throw new NotFoundException("Not found");
 
             user.Email = dto.Email;
+            user.Name = dto.Name;
+            user.Surname = dto.Surname;
+            user.City = dto.City;
+            user.Street = dto.Street;
+            user.HouseNumber = dto.HouseNumber;
+            user.ApartmentNumber = dto.ApartmentNumber;
+            user.PostalCode = dto.PostalCode;
+            user.PhoneNumber = dto.PhoneNumber;
+            user.WebAddress = dto.WebAddress;
             _dbContext.SaveChanges();
 
-            var returnDto = MapToReturnDto(user);
+            var returnDto = MapToReturnForAdminDto(user);
             return returnDto;
         }
 
@@ -132,7 +152,7 @@ namespace imotoAPI.Services
 
 
 
-        private UserReturnForAdminDto MapToReturnDto (User user)
+        private static UserReturnForAdminDto MapToReturnForAdminDto (User user)
         {
             var userDto = new UserReturnForAdminDto()
             {
@@ -140,7 +160,36 @@ namespace imotoAPI.Services
                 TypeId = user.UserTypeId,
                 UserType = user.UserType,
                 Login = user.Login,
-                Email = user.Email
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                City = user.City,
+                Street = user.Street,
+                HouseNumber = user.HouseNumber,
+                ApartmentNumber = user.ApartmentNumber,
+                PostalCode = user.PostalCode,
+                PhoneNumber = user.PhoneNumber,
+                WebAddress = user.WebAddress
+            };
+            return userDto;
+        }
+
+        private static UserReturnDto MapToReturnDto ( User user)
+        {
+            var userDto = new UserReturnDto()
+            {
+                Id = user.Id,
+                UserType = user.UserType,
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                City = user.City,
+                Street = user.Street,
+                HouseNumber = user.HouseNumber,
+                ApartmentNumber = user.ApartmentNumber,
+                PostalCode = user.PostalCode,
+                PhoneNumber = user.PhoneNumber,
+                WebAddress = user.WebAddress
             };
             return userDto;
         }

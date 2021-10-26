@@ -20,6 +20,7 @@ namespace imotoAPI.Controllers
             _service = service;
         }
 
+        //for admin
         [HttpGet]
         public ActionResult<IEnumerable<UserReturnForAdminDto>> GetAll()
         {
@@ -27,13 +28,15 @@ namespace imotoAPI.Controllers
             return Ok(users);
         }
 
+        //for all
         [HttpGet("{id}")]
-        public ActionResult<UserReturnForAdminDto> GetAll([FromRoute] int id)
+        public ActionResult<UserReturnDto> GetAll([FromRoute] int id)
         {
             var user = _service.GetById(id);
             return Ok(user);
         }
 
+        //for user
         [HttpPost]
         public ActionResult<UserReturnForAdminDto> Add([FromBody] UserGetDto dto)
         {
@@ -41,6 +44,7 @@ namespace imotoAPI.Controllers
             return Ok(user);
         }
 
+        //for user
         [HttpPut("{id}/contactInfo")]
         public ActionResult<UserReturnForAdminDto> UpdateContactInfo([FromRoute] int id, [FromBody] UserUpdateDto dto)
         {
@@ -48,6 +52,7 @@ namespace imotoAPI.Controllers
             return Ok(user);
         }
 
+        //for user
         [HttpPut("{id}/password")]
         public ActionResult ChangePassword([FromRoute] int id, [FromBody] PasswordDto dto)
         {
