@@ -26,11 +26,8 @@ namespace imotoAPI.Entities
         public DbSet<CarStatus> CarStatuses { get; set; }
         public DbSet<CarTransmission> CarTransmissions { get; set; }
         public DbSet<CarYear> CarYears { get; set; }
-        public DbSet<EnterpriseUser> EnterpriseUsers { get; set; }
         public DbSet<Moderator> Moderators { get; set; }
         public DbSet<ModeratorType> ModeratorTypes { get; set; }
-        public DbSet<Phone> Phones { get; set; }
-        public DbSet<PrivateUser> PrivateUsers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<WatchedAnnoucement> WatchedAnnoucements { get; set; }
@@ -41,9 +38,6 @@ namespace imotoAPI.Entities
         {
             //User
             setFieldsOfUser(modelBuilder);
-            setFieldsOfPrivateUser(modelBuilder);
-            setFieldsOfEnterpriseUser(modelBuilder);
-            setFieldsOfPhone(modelBuilder);
             setFieldsOfUserType(modelBuilder);
             setFieldsOfWatchedUser(modelBuilder);
 
@@ -292,105 +286,6 @@ namespace imotoAPI.Entities
                 .HasMaxLength(255);
         }
 
-        private static void setFieldsOfPhone(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Phone>()
-                .Property(e => e.Number)
-                .IsRequired()
-                .HasMaxLength(11);
-
-            modelBuilder.Entity<Phone>()
-                .Property(e => e.Name)
-                .HasMaxLength(100);
-        }
-
-        private static void setFieldsOfEnterpriseUser(ModelBuilder modelBuilder)
-        {
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .HasKey(c => new { c.UserId });
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .HasOne(e => e.User)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(255);
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .Property(e => e.City)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .Property(e => e.Street)
-                .HasMaxLength(100);
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .Property(e => e.HouseNumber)
-                .IsRequired()
-                .HasMaxLength(4);
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .Property(e => e.ApartmentNumber)
-                .HasMaxLength(4);
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .Property(e => e.PostalCode)
-                .IsRequired()
-                .HasMaxLength(5);
-
-            modelBuilder.Entity<EnterpriseUser>()
-                .Property(e => e.WebAddress)
-                .HasMaxLength(100);
-        }
-
-        private static void setFieldsOfPrivateUser(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<PrivateUser>()
-                .HasKey(c => new { c.UserId });
-
-            modelBuilder.Entity<PrivateUser>()
-                .HasOne(e => e.User)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<PrivateUser>()
-                .Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(45);
-
-            modelBuilder.Entity<PrivateUser>()
-                .Property(e => e.Surname)
-                .IsRequired()
-                .HasMaxLength(45);
-
-            modelBuilder.Entity<PrivateUser>()
-                .Property(e => e.City)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            modelBuilder.Entity<PrivateUser>()
-                .Property(e => e.Street)
-                .HasMaxLength(100);
-
-            modelBuilder.Entity<PrivateUser>()
-                .Property(e => e.HouseNumber)
-                .HasMaxLength(4);
-
-            modelBuilder.Entity<PrivateUser>()
-                .Property(e => e.ApartmentNumber)
-                .HasMaxLength(4);
-
-            modelBuilder.Entity<PrivateUser>()
-                .Property(e => e.PhoneNumber)
-                .IsRequired()
-                .HasMaxLength(11);
-        }
-
         private static void setFieldsOfUser(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -408,6 +303,51 @@ namespace imotoAPI.Entities
                 .Property(e => e.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(255);
+
+            modelBuilder.Entity<User>()
+               .Property(e => e.Name)
+               .IsRequired()
+               .HasMaxLength(255);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.Surname)
+                .IsRequired(false)
+                .HasMaxLength(45);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.City)
+                .IsRequired(true)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.Street)
+                .IsRequired(false)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.HouseNumber)
+                .IsRequired(false)
+                .HasMaxLength(4);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.ApartmentNumber)
+                .IsRequired(false)
+                .HasMaxLength(4);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.PostalCode)
+                .IsRequired(false)
+                .HasMaxLength(5);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(11);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.WebAddress)
+                .IsRequired(false)
+                .HasMaxLength(100);
         }
 
         protected override void OnConfiguring
