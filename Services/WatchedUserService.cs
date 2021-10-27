@@ -12,7 +12,7 @@ namespace imotoAPI.Services
 
     public interface IWatchedUserService
     {
-        public IEnumerable<UserReturnForAdminDto> GetWatchedUsers(int followerId);
+        public IEnumerable<UserReturnDto> GetWatchedUsers(int followerId);
         public WatchedUserReturnDto Add(WatchedUserDto dto);
         public void Delete(WatchedUserDto dto);
     }
@@ -26,7 +26,7 @@ namespace imotoAPI.Services
             _dbContext = dbContext;
         }
 
-        public IEnumerable<UserReturnForAdminDto> GetWatchedUsers(int followerId)
+        public IEnumerable<UserReturnDto> GetWatchedUsers(int followerId)
         {
             var watchedUsers = _dbContext
                 .WatchedUsers
@@ -35,17 +35,24 @@ namespace imotoAPI.Services
                 .Where(wu => wu.FollowerId == followerId)
                 .ToList();
 
-            var users = new List<UserReturnForAdminDto>();
+            var users = new List<UserReturnDto>();
 
             foreach (WatchedUser wu in watchedUsers)
             {
-                var user = new UserReturnForAdminDto()
+                var user = new UserReturnDto()
                 {
                     Id = wu.Watched.Id,
-                    TypeId = wu.Watched.UserTypeId,
                     UserType = wu.Watched.UserType,
-                    Login = null,
-                    Email = wu.Watched.Email
+                    Email = wu.Watched.Email,
+                    Name = wu.Watched.Name,
+                    Surname = wu.Watched.Surname,
+                    City = wu.Watched.City,
+                    Street = wu.Watched.Street,
+                    HouseNumber = wu.Watched.HouseNumber,
+                    ApartmentNumber = wu.Watched.ApartmentNumber,
+                    PostalCode = wu.Watched.PostalCode,
+                    PhoneNumber = wu.Watched.PhoneNumber,
+                    WebAddress = wu.Watched.WebAddress
                 };
                 users.Add(user);
             }

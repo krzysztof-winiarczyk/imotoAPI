@@ -7,7 +7,7 @@ dodać statusy do meoderatorów
 dodać statusy do użytkowników
 zmienić Ok na Created w statusach 200 na 201
 dodać walidację adresów email
-poprawić Usera
+poprawić WatchedUser Endpoint
 
 DONE:
 zmiana hasła moderatora: nie pozwolić aby nowe hasło było takie samo jak stare
@@ -15,3 +15,4 @@ moderator: nie pozwalać na używanie tego samego loginu
 nie działa constraint User-UserType
 zmapować WatchedUser na WatchedUserDto
 uprościć strukturę: usunąć tabele EnterpriseUsers and PrivateUsers
+poprawić Usera
