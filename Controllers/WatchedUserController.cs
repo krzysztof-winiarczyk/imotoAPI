@@ -21,12 +21,6 @@ namespace imotoAPI.Controllers
             _service = service;
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<IEnumerable<UserReturnDto>> Get([FromRoute] int id)
-        {
-            var watchedUsers = _service.GetWatchedUsers(id);
-            return Ok(watchedUsers);
-        }
 
         [HttpPost]
         public ActionResult<WatchedUserReturnDto> Add([FromBody] WatchedUserDto dto)

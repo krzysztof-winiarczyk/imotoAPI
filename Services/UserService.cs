@@ -19,19 +19,24 @@ namespace imotoAPI.Services
         public UserReturnForAdminDto Add(UserGetDto dto);
         public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
+        public IEnumerable<AnnoucementReturnDto> GetWatchedAnnoucements(int id);
+        public IEnumerable<UserReturnDto> GetWatchedUsers(int id);
     }
 
     public class UserService : IUserService
     {
         private readonly ImotoDbContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IAnnoucementService _annoucementService;
 
         public UserService(
             ImotoDbContext dbContext,
-            IPasswordHasher<User> passwordHasher)
+            IPasswordHasher<User> passwordHasher,
+            IAnnoucementService annoucementService)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
+            _annoucementService = annoucementService;
         }
 
         //for admin
@@ -148,6 +153,42 @@ namespace imotoAPI.Services
             {
                 throw new IncorrectLoggingException("Incorrect password");
             }
+        }
+
+        public IEnumerable<AnnoucementReturnDto> GetWatchedAnnoucements(int id)
+        {
+            var watchedAnnoucements = _dbContext
+                .WatchedAnnoucements
+                .Where(wa => wa.UserId == id)
+                .ToList();
+
+            var annoucements = new List<AnnoucementReturnDto>();
+
+            foreach(WatchedAnnoucement wa in watchedAnnoucements)
+            {
+                var annoucement = _annoucementService.GetById(wa.AnnoucementId);
+                annoucements.Add(annoucement);
+            }
+
+            return annoucements;
+        }
+
+        public IEnumerable<UserReturnDto> GetWatchedUsers(int id)
+        {
+            var watchedUsers = _dbContext
+                .WatchedUsers
+                .Where(wa => wa.FollowerId == id)
+                .ToList();
+
+            var users = new List<UserReturnDto>();
+
+            foreach(WatchedUser wa in watchedUsers)
+            {
+                var user = GetById(wa.WatchedId);
+                users.Add(user);
+            }
+
+            return users;
         }
 
 

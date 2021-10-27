@@ -59,5 +59,23 @@ namespace imotoAPI.Controllers
             _service.ChangePassword(id, dto);
             return Ok();
         }
+
+        //for user
+        [HttpGet("{id}/watchedAnnoucements")]
+        public ActionResult<IEnumerable<AnnoucementReturnDto>> GetWatchedAnnoucements([FromRoute] int id)
+        {
+            var annoucements = _service.GetWatchedAnnoucements(id);
+            return Ok(annoucements);
+        }
+
+        //for user
+        [HttpGet("{id}/watchedUsers")]
+        public ActionResult<IEnumerable<UserReturnDto>> GetWatchedUsers([FromRoute] int id)
+        {
+            var users = _service.GetWatchedUsers(id);
+            return Ok(users);
+        }
+
+
     }
 }
