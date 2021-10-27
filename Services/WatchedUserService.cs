@@ -68,6 +68,9 @@ namespace imotoAPI.Services
 
             if (watchedUser is not null)
                 throw new ResourceExsistsException("Already exisist");
+
+            if (dto.FollowerId == dto.WatchedId)
+                throw new WatchedUserException("It is not allowed to follow yourself");
             
             watchedUser = new WatchedUser()
             {

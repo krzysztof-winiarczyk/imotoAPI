@@ -41,6 +41,11 @@ namespace imotoAPI.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(oldNewPasswordException.Message);
             }
+            catch (WatchedUserException watchedUserException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(watchedUserException.Message);
+            }
             catch(Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateException)
             {
                 context.Response.StatusCode = 400;
