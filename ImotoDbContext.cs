@@ -32,6 +32,7 @@ namespace imotoAPI.Entities
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<WatchedAnnoucement> WatchedAnnoucements { get; set; }
         public DbSet<WatchedUser> WatchedUsers { get; set; }
+        public DbSet<Voivodeship> Voivodeships { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -61,6 +62,9 @@ namespace imotoAPI.Entities
             //Annoucement
             setFieldsOfAnnoucement(modelBuilder);
             setFieldsOfWatchedAnnoucement(modelBuilder);
+
+            //Voivodeship
+            SetFieldsOfVoivodeship(modelBuilder);
 
         }
 
@@ -348,6 +352,14 @@ namespace imotoAPI.Entities
                 .Property(e => e.WebAddress)
                 .IsRequired(false)
                 .HasMaxLength(100);
+        }
+
+        private static void SetFieldsOfVoivodeship(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Voivodeship>()
+                .Property(e => e.Name)
+                .IsRequired(true)
+                .HasMaxLength(255);
         }
 
         protected override void OnConfiguring
