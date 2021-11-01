@@ -36,6 +36,7 @@ namespace imotoAPI.Entities
         public DbSet<Voivodeship> Voivodeships { get; set; }
         public DbSet<UserStatus> UserStatuses { get; set; }
         public DbSet<AnnoucementStatus> AnnoucementStatuses { get; set; }
+        public DbSet<ModeratorStatus> ModeratorStatuses { get; set; }
 
 
 
@@ -73,6 +74,7 @@ namespace imotoAPI.Entities
             //Statuses
             SetFieldsOfUserStatus(modelBuilder);
             SetFieldsOfAnnoucementStatuses(modelBuilder);
+            SetFieldsOfModeratorStatus(modelBuilder);
         }
 
 
@@ -390,6 +392,19 @@ namespace imotoAPI.Entities
                .HasMaxLength(50);
 
             modelBuilder.Entity<AnnoucementStatus>()
+                .Property(e => e.Description)
+                .IsRequired(false)
+                .HasMaxLength(255);
+        }
+
+        private static void SetFieldsOfModeratorStatus (ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ModeratorStatus>()
+              .Property(e => e.Name)
+              .IsRequired(true)
+              .HasMaxLength(50);
+
+            modelBuilder.Entity<ModeratorStatus>()
                 .Property(e => e.Description)
                 .IsRequired(false)
                 .HasMaxLength(255);
