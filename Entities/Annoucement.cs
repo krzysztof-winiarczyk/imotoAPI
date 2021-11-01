@@ -49,6 +49,9 @@ namespace imotoAPI.Entities
         public int? VoivodeshipId { get; set; }
         public virtual Voivodeship Voivodeship { get; set; }
 
+        public int? AnnoucementStatusId { get; set; }
+        public virtual AnnoucementStatus AnnoucementStatus { get; set; }
+
         public int Price { get; set; }
         public int Mileage { get; set; }
         public string Description { get; set; }
