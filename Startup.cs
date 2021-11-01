@@ -67,6 +67,7 @@ namespace imoto
             services.AddScoped<IPasswordHasher<Moderator>, PasswordHasher<Moderator>>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+            services.AddScoped<IUserStatusService, UserStatusService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
