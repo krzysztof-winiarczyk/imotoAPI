@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace imotoAPI.Entities
@@ -33,6 +34,8 @@ namespace imotoAPI.Entities
         public DbSet<WatchedAnnoucement> WatchedAnnoucements { get; set; }
         public DbSet<WatchedUser> WatchedUsers { get; set; }
         public DbSet<Voivodeship> Voivodeships { get; set; }
+        public DbSet<UserStatus> UserStatuses { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -66,6 +69,8 @@ namespace imotoAPI.Entities
             //Voivodeship
             SetFieldsOfVoivodeship(modelBuilder);
 
+            //Statuses
+            SetFieldsOfUserStatus(modelBuilder);
         }
 
 
@@ -359,6 +364,19 @@ namespace imotoAPI.Entities
             modelBuilder.Entity<Voivodeship>()
                 .Property(e => e.Name)
                 .IsRequired(true)
+                .HasMaxLength(255);
+        }
+
+        private static void SetFieldsOfUserStatus(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserStatus>()
+                .Property(e => e.Name)
+                .IsRequired(true)
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<UserStatus>()
+                .Property(e => e.Description)
+                .IsRequired(false)
                 .HasMaxLength(255);
         }
 

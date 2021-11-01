@@ -16,6 +16,9 @@ namespace imotoAPI.Entities
         public string Email { get; set; }
         public string PasswordHash { get; set; }
 
+        public int? UserStatusId { get; set; }
+        public virtual UserStatus UserStatus { get; set; }
+
         public string Name { get; set; }
         public string Surname { get; set; }
         public string City { get; set; }
