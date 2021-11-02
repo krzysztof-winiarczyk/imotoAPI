@@ -69,6 +69,8 @@ namespace imoto
 
             services.AddScoped<IUserStatusService, UserStatusService>();
             services.AddScoped<IModeratorStatusService, ModeratorStatusService>();
+
+            services.AddScoped<IVoivodeshipService, VoivodeshipService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
