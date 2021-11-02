@@ -69,6 +69,7 @@ namespace imoto
 
             services.AddScoped<IUserStatusService, UserStatusService>();
             services.AddScoped<IModeratorStatusService, ModeratorStatusService>();
+            services.AddScoped<IAnnoucementStatusService, AnnoucementStatusService>();
 
             services.AddScoped<IVoivodeshipService, VoivodeshipService>();
         }
