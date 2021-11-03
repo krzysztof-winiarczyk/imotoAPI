@@ -33,6 +33,13 @@ namespace imotoAPI
                     _dbContext.SaveChanges();
                 }
 
+                if (!_dbContext.UserStatuses.Any())
+                {
+                    var userStatuses = GetUserStatuses();
+                    _dbContext.UserStatuses.AddRange(userStatuses);
+                    _dbContext.SaveChanges();
+                }
+
                 if (!_dbContext.Voivodeships.Any())
                 {
                     var voivodeshpis = GetVoivodeships();
@@ -83,6 +90,27 @@ namespace imotoAPI
                 {
                     Name = "dezaktywowane",
                     Description = "konto wygasło",
+                    Editable = false
+                }
+            };
+
+            return statuses;
+        }
+
+        public IEnumerable<UserStatus> GetUserStatuses()
+        {
+            var statuses = new List<UserStatus>()
+            {
+                new UserStatus()
+                {
+                    Name = "aktywne",
+                    Description = "konto aktywne",
+                    Editable = false
+                },
+                new UserStatus()
+                {
+                    Name = "dezaktywowane",
+                    Description = "konto zostało dezaktywowane",
                     Editable = false
                 }
             };

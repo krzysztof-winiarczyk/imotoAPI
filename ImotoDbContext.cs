@@ -382,6 +382,10 @@ namespace imotoAPI.Entities
                 .Property(e => e.Description)
                 .IsRequired(false)
                 .HasMaxLength(255);
+
+            modelBuilder.Entity<UserStatus>()
+                .Property(e => e.Editable)
+                .IsRequired(false);
         }
 
         private static void SetFieldsOfAnnoucementStatuses(ModelBuilder modelBuilder)

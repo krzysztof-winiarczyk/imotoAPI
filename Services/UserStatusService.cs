@@ -52,7 +52,8 @@ namespace imotoAPI.Services
             var status = new UserStatus()
             {
                 Name = dto.Name,
-                Description = dto.Description
+                Description = dto.Description,
+                Editable = true
             };
 
             _dbContext.Add(status);
@@ -69,6 +70,9 @@ namespace imotoAPI.Services
 
             if (status is null)
                 throw new NotFoundException("Not found");
+
+            if (status.Editable == false)
+                throw new NotAllowedException("Action not allowed");
 
             status.Name = dto.Name;
             status.Description = dto.Description;
