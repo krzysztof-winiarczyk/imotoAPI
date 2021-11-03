@@ -25,6 +25,13 @@ namespace imotoAPI
                     _dbContext.AnnoucementStatuses.AddRange(annoucementStatuses);
                     _dbContext.SaveChanges();
                 }
+
+                if (!_dbContext.Voivodeships.Any())
+                {
+                    var voivodeshpis = GetVoivodeships();
+                    _dbContext.Voivodeships.AddRange(voivodeshpis);
+                    _dbContext.SaveChanges();
+                }
             }
         }
 
@@ -53,6 +60,79 @@ namespace imotoAPI
             };
 
             return statuses;
+        }
+
+        private IEnumerable<Voivodeship> GetVoivodeships()
+        {
+            var voivodeships = new List<Voivodeship>()
+            {
+                new Voivodeship()
+                {
+                    Name = "dolnośląskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "kujawsko-pomorskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "lubelskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "lubuskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "łódzkie"
+                },
+                new Voivodeship()
+                {
+                    Name = "małopolskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "mazowieckie"
+                },
+                new Voivodeship()
+                {
+                    Name = "opolskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "podkarpackie"
+                },
+                new Voivodeship()
+                {
+                    Name = "podlaskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "pomorskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "śląskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "świętokrzyskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "warmińsko-mazurskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "wielkopolskie"
+                },
+                new Voivodeship()
+                {
+                    Name = "zachodniopomorskie"
+                }
+            };
+
+            return voivodeships;
         }
     }
 }
