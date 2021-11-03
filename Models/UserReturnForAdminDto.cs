@@ -13,6 +13,8 @@ namespace imotoAPI.Models
         public int TypeId { get; set; }
         public UserType UserType { get; set; }
 
+        public UserStatus UserStatus { get; set; }
+
         public string Login { get; set; }
         public string Email { get; set; }
 

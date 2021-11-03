@@ -7,6 +7,7 @@ dodać statusy do meoderatorów
 dodać statusy do użytkowników
 zmienić Ok na Created w statusach 200 na 201
 dodać walidację adresów email
+odzyskiwanie kont użytkowników
 
 DONE:
 zmiana hasła moderatora: nie pozwolić aby nowe hasło było takie samo jak stare

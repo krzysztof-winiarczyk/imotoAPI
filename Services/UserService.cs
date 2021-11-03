@@ -16,6 +16,7 @@ namespace imotoAPI.Services
     {
         public IEnumerable<UserReturnForAdminDto> GetAll();
         public UserReturnDto GetById(int id);
+        public void DeleteAccount(int id);
         public UserReturnForAdminDto Add(UserGetDto dto);
         public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
@@ -45,6 +46,7 @@ namespace imotoAPI.Services
             var users = _dbContext
                 .Users
                 .Include(u => u.UserType)
+                .Include(u => u.UserStatus)
                 .ToList();
 
             List<UserReturnForAdminDto> usersDtos = new();
@@ -62,13 +64,73 @@ namespace imotoAPI.Services
             var user = _dbContext
                 .Users
                 .Include(u => u.UserType)
+                .Include(u => u.UserStatus)
                 .FirstOrDefault(u => u.Id == id);
 
             if (user is null)
                 throw new NotFoundException("Not found");
 
+            if (user.UserStatus.Name == "dezaktywowane")
+                throw new NotFoundException("Konto zostało usunięte");
+
             var userDto = MapToReturnDto(user);
             return userDto;
+        }
+
+        //for user
+        public void DeleteAccount(int id)
+        {
+            //get user
+            var user = _dbContext
+                .Users
+                .Include(u => u.UserStatus)
+                .FirstOrDefault(u => u.Id == id);
+
+            if (user is null)
+                throw new NotFoundException("Not found");
+
+            //set status "dezaktywowane"
+            var userStatus = _dbContext
+                .UserStatuses
+                .FirstOrDefault(s => s.Name == "dezaktywowane");
+            user.UserStatusId = userStatus.Id;
+            user.UserStatus = userStatus;
+
+
+            //get watched annoucements of user
+            var watchedAnnoucementsOfUser = _dbContext
+                .WatchedAnnoucements
+                .Where(wa => wa.UserId == id)
+                .ToList();
+
+            var watchedAnnoucementsOfOtherUsers = new List<WatchedAnnoucement>();
+
+            //set status "usunięte" for annoucements of user
+            var annoucements = _dbContext
+                .Annoucements
+                .Where(a => a.UserId == user.Id)
+                .ToList();
+            var annoucementStatus = _dbContext
+                .AnnoucementStatuses
+                .FirstOrDefault(s => s.Name == "usunięte");
+
+            foreach(Annoucement a in annoucements)
+            {
+                a.AnnoucementStatusId = annoucementStatus.Id;
+                a.AnnoucementStatus = annoucementStatus;
+
+                var watchedAnnoucementsOfAnnoucements = _dbContext
+                    .WatchedAnnoucements
+                    .Where(wa => wa.AnnoucementId == a.Id)
+                    .ToList();
+
+                watchedAnnoucementsOfOtherUsers.AddRange(watchedAnnoucementsOfAnnoucements);
+            }
+
+
+            _dbContext.WatchedAnnoucements.RemoveRange(watchedAnnoucementsOfUser);
+            _dbContext.WatchedAnnoucements.RemoveRange(watchedAnnoucementsOfOtherUsers);
+            _dbContext.SaveChanges();
         }
 
         public UserReturnForAdminDto Add(UserGetDto dto)
@@ -76,9 +138,14 @@ namespace imotoAPI.Services
             if (!IsLoginFree(dto.Login))
                 throw new LoginNotUniqueException("Login is taken");
 
+            var status = _dbContext
+                .UserStatuses
+                .FirstOrDefault(s => s.Name == "aktywne");
+
             var user = new User()
             {
                 UserTypeId = dto.TypeId,
+                UserStatusId = status.Id,
                 Login = dto.Login,
                 Email = dto.Email,
                 Name = dto.Name,
@@ -200,6 +267,7 @@ namespace imotoAPI.Services
                 Id = user.Id,
                 TypeId = user.UserTypeId,
                 UserType = user.UserType,
+                UserStatus = user.UserStatus,
                 Login = user.Login,
                 Email = user.Email,
                 Name = user.Name,

@@ -76,6 +76,14 @@ namespace imotoAPI.Controllers
             return Ok(users);
         }
 
+        //for user
+        [HttpDelete("{id}")]
+        public ActionResult DeleteAccount([FromRoute] int id)
+        {
+            _service.DeleteAccount(id);
+            return Ok();
+        }
 
+        //TODO: account retreive
     }
 }
