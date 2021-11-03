@@ -412,6 +412,10 @@ namespace imotoAPI.Entities
                 .Property(e => e.Description)
                 .IsRequired(false)
                 .HasMaxLength(255);
+
+            modelBuilder.Entity<ModeratorStatus>()
+                .Property(e => e.Editable)
+                .IsRequired(false);
         }
 
         protected override void OnConfiguring

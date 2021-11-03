@@ -26,6 +26,13 @@ namespace imotoAPI
                     _dbContext.SaveChanges();
                 }
 
+                if (!_dbContext.ModeratorStatuses.Any())
+                {
+                    var moderatorStatuses = GetModeratorStatuses();
+                    _dbContext.ModeratorStatuses.AddRange(moderatorStatuses);
+                    _dbContext.SaveChanges();
+                }
+
                 if (!_dbContext.Voivodeships.Any())
                 {
                     var voivodeshpis = GetVoivodeships();
@@ -55,6 +62,27 @@ namespace imotoAPI
                 {
                     Name = "zawieszone",
                     Description = "ogłoszenie aktualnie nie jest dostępne",
+                    Editable = false
+                }
+            };
+
+            return statuses;
+        }
+
+        public IEnumerable<ModeratorStatus> GetModeratorStatuses()
+        {
+            var statuses = new List<ModeratorStatus>()
+            {
+                new ModeratorStatus()
+                {
+                    Name = "admin",
+                    Description = "posiada wszystkie uprawnienia",
+                    Editable = false
+                },
+                new ModeratorStatus()
+                {
+                    Name = "dezaktywowane",
+                    Description = "konto wygasło",
                     Editable = false
                 }
             };
