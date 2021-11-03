@@ -395,6 +395,10 @@ namespace imotoAPI.Entities
                 .Property(e => e.Description)
                 .IsRequired(false)
                 .HasMaxLength(255);
+
+            modelBuilder.Entity<AnnoucementStatus>()
+                .Property(e => e.Editable)
+                .IsRequired(false);
         }
 
         private static void SetFieldsOfModeratorStatus (ModelBuilder modelBuilder)

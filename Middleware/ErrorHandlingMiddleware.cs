@@ -21,6 +21,11 @@ namespace imotoAPI.Middleware
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
+            catch (NotAllowedException notAllowedException)
+            {
+                context.Response.StatusCode = 405;
+                await context.Response.WriteAsync(notAllowedException.Message);
+            }
             catch(ResourceExsistsException resourceExsistsException)
             {
                 context.Response.StatusCode = 400;

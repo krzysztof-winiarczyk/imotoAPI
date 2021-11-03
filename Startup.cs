@@ -1,3 +1,4 @@
+using imotoAPI;
 using imotoAPI.Entities;
 using imotoAPI.Middleware;
 using imotoAPI.Services;
@@ -39,6 +40,9 @@ namespace imoto
 
             services.AddDbContext<ImotoDbContext>();
 
+            //seeders
+            services.AddScoped<ImotoSeeder>();
+
             services.AddScoped<ErrorHandlingMiddleware>();
 
             services.AddScoped<ICarFuelService, CarFuelService>();
@@ -75,8 +79,10 @@ namespace imoto
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ImotoSeeder seeder)
         {
+            seeder.Seed();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
