@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Exceptions;
 using imotoAPI.Models;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
@@ -14,12 +15,56 @@ namespace imotoAPI.Services
 
     public interface IAnnoucementService
     {
+
+        /// <summary>
+        /// Returns only active annoucements
+        /// </summary>
+        /// <returns>collection of active annoucements</returns>
         public IEnumerable<AnnoucementReturnDto> Get();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id of annoucement</param>
+        /// <returns>active annoucement of id</returns>
         public AnnoucementReturnDto GetById(int id);
+
+        /// <summary>
+        /// create annoucement from dto and add to DataBase
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns>created annoucement</returns>
         public Annoucement AddAnnoucement(AnnoucementGetDto dto);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns>eddited annoucement</returns>
         public Annoucement EditAnnoucement(int id, AnnoucementGetDto dto);
-        public Annoucement_CarStatus AddStatusToAnnoucement(int id, CarStatusIdDto dto);
-        public Annoucement_CarEquipment AddEquipmentToAnnoucement(int id, CarEquipmentIdDto dto);
+
+        /// <summary>
+        /// change status of annouceemnt and delete all watchedAnnoucements connected with it
+        /// </summary>
+        /// <param name="id"></param>
+        public void DeleteAnnoucement(int id);
+
+        /// <summary>
+        /// add carStatus to annoucement
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public Annoucement_CarStatus AddCarStatusToAnnoucement(int id, CarStatusIdDto dto);
+
+        /// <summary>
+        /// add carEquipment to annoucement
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public Annoucement_CarEquipment AddCarEquipmentToAnnoucement(int id, CarEquipmentIdDto dto);
 
     }
 
@@ -32,9 +77,12 @@ namespace imotoAPI.Services
             _dbContext = dbContext;
         }
 
+        
         public IEnumerable<AnnoucementReturnDto> Get()
         {
             //TODO: add filtering and pagination
+
+            var status = GetActiveStatus();
 
             var annoucements = _dbContext
                 .Annoucements
@@ -48,6 +96,7 @@ namespace imotoAPI.Services
                 .Include(a => a.CarFuel)
                 .Include(a => a.CarDrive)
                 .Include(a => a.CarTransmission)
+                .Where(a => a.AnnoucementStatusId == status.Id)
                 .ToList();
 
             var annoucementsDto = new List<AnnoucementReturnDto>();
@@ -78,6 +127,9 @@ namespace imotoAPI.Services
                 dto.Mileage = a.Mileage;
                 dto.Description = a.Description;
 
+                dto.CarEquipment = GetCarEquipmentOfAnnoucement(a.Id);
+                dto.CarStatuses = GetCarStatusesOfAnnoucement(a.Id);
+
                 //TODO: include car equipment
                 //TODO: include car statuses
 
@@ -87,8 +139,11 @@ namespace imotoAPI.Services
             return annoucementsDto;
         }
 
+        
         public AnnoucementReturnDto GetById(int id)
         {
+            var status = GetActiveStatus();
+
             var annocuement = _dbContext
                 .Annoucements
                 .Include(a => a.CarClass)
@@ -101,6 +156,7 @@ namespace imotoAPI.Services
                 .Include(a => a.CarFuel)
                 .Include(a => a.CarDrive)
                 .Include(a => a.CarTransmission)
+                .Where(a => a.AnnoucementStatusId == status.Id)
                 .FirstOrDefault(a => a.Id == id);
 
             if (annocuement is null)
@@ -130,14 +186,16 @@ namespace imotoAPI.Services
             dto.Mileage = annocuement.Mileage;
             dto.Description = annocuement.Description;
 
-            dto.CarEquipment = this.GetEquipmentOfAnnoucement(annocuement.Id);
-            dto.CarStatuses = GetStatusesOfAnnoucement(annocuement.Id);
+            dto.CarEquipment = GetCarEquipmentOfAnnoucement(annocuement.Id);
+            dto.CarStatuses = GetCarStatusesOfAnnoucement(annocuement.Id);
 
             return dto;
         }
         
         public Annoucement AddAnnoucement(AnnoucementGetDto dto)
         {
+            var status = GetActiveStatus();
+
             var annoucement = new Annoucement();
             annoucement.UserId = dto.UserId;
             annoucement.CarClassId = dto.CarClassId;
@@ -157,6 +215,7 @@ namespace imotoAPI.Services
             annoucement.Price = dto.Price;
             annoucement.Mileage = dto.Mileage;
             annoucement.Description = dto.Description;
+            annoucement.AnnoucementStatusId = status.Id;
 
             _dbContext.Add(annoucement);
             _dbContext.SaveChanges();
@@ -199,7 +258,33 @@ namespace imotoAPI.Services
 
         }
 
-        public Annoucement_CarStatus AddStatusToAnnoucement (int id, CarStatusIdDto dto)
+        public void DeleteAnnoucement (int id)
+        {
+            //get annoucement from DB
+            var annoucement = _dbContext
+                .Annoucements
+                .FirstOrDefault(a => a.Id == id);
+            if (annoucement is null)
+                throw new NotFoundException("Not found");
+
+            //set status for annoucement
+            var statusDeleted = GetDeletedStatus();
+            annoucement.AnnoucementStatusId = statusDeleted.Id;
+            annoucement.AnnoucementStatus = statusDeleted;
+
+            //get all watchedAnnoucements entites which annoucementId is id 
+            var watchedAnnoucements = _dbContext
+                    .WatchedAnnoucements
+                    .Where(wa => wa.AnnoucementId == annoucement.Id)
+                    .ToList();
+            //remove watchedAnnoucements from DB
+            _dbContext.WatchedAnnoucements.RemoveRange(watchedAnnoucements);
+
+            //save changes on DB
+            _dbContext.SaveChanges();
+        }
+
+        public Annoucement_CarStatus AddCarStatusToAnnoucement (int id, CarStatusIdDto dto)
         {
             var annoucement = _dbContext
                 .Annoucements
@@ -208,16 +293,16 @@ namespace imotoAPI.Services
             if (annoucement is null)
                 throw new NotFoundException("Not found");
 
-            var status = _dbContext
+            var carStatus = _dbContext
                 .CarStatuses
                 .FirstOrDefault(cs => cs.Id == dto.CarStatusId);
 
-            if (status is null)
+            if (carStatus is null)
                 throw new NotFoundException("Not found");
 
             var annoucementCarStatusObject = new Annoucement_CarStatus();
             annoucementCarStatusObject.AnnoucementId = annoucement.Id;
-            annoucementCarStatusObject.CarStatusId = status.Id;
+            annoucementCarStatusObject.CarStatusId = carStatus.Id;
             _dbContext.Add(annoucementCarStatusObject);
             _dbContext.SaveChanges();
 
@@ -225,7 +310,7 @@ namespace imotoAPI.Services
         }
 
 
-        public Annoucement_CarEquipment AddEquipmentToAnnoucement(int id, CarEquipmentIdDto dto)
+        public Annoucement_CarEquipment AddCarEquipmentToAnnoucement(int id, CarEquipmentIdDto dto)
         {
             var annoucement = _dbContext
                 .Annoucements
@@ -251,7 +336,7 @@ namespace imotoAPI.Services
         }
 
 
-        private List<CarStatus> GetStatusesOfAnnoucement(int annoucementId)
+        private List<CarStatus> GetCarStatusesOfAnnoucement(int annoucementId)
         {
             var annoucementStatuses = _dbContext
                 .Annoucement_CarStatuses
@@ -270,7 +355,7 @@ namespace imotoAPI.Services
             return carStatuses;
         }
 
-        private List<CarEquipment> GetEquipmentOfAnnoucement(int annoucementId)
+        private List<CarEquipment> GetCarEquipmentOfAnnoucement(int annoucementId)
         {
             var annoucementEquipment = _dbContext
                 .Annoucement_CarEquipments
@@ -287,6 +372,32 @@ namespace imotoAPI.Services
             }
 
             return carEquipment;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>status witch name is "aktualne"</returns>
+        private AnnoucementStatus GetActiveStatus()
+        {
+            var status = _dbContext
+                .AnnoucementStatuses
+                .FirstOrDefault(s => s.Name == "aktualne");
+
+            return status;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>status witch name is "usunięte"</returns>
+        private AnnoucementStatus GetDeletedStatus()
+        {
+            var status = _dbContext
+                .AnnoucementStatuses
+                .FirstOrDefault(s => s.Name == "usunięte");
+
+            return status;
         }
     }
 }

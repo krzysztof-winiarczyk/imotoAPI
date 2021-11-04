@@ -48,17 +48,24 @@ namespace imotoAPI.Controllers
             return Ok(annoucement);
         }
 
+        [HttpDelete("{id}")]
+        public ActionResult DeleteAnnoucement([FromRoute] int id)
+        {
+            _service.DeleteAnnoucement(id);
+            return Ok();
+        }
+
         [HttpPost("{id}/status")]
         public ActionResult<Annoucement_CarStatus> AddStatusToAnnoucement([FromRoute] int id, [FromBody] CarStatusIdDto dto) 
         {
-            var annoucementCarStatusObject = _service.AddStatusToAnnoucement(id, dto);
+            var annoucementCarStatusObject = _service.AddCarStatusToAnnoucement(id, dto);
             return Ok(annoucementCarStatusObject);
         }
 
         [HttpPost("{id}/equipment")]
         public ActionResult<Annoucement_CarStatus> AddEquipmentToAnnoucement([FromRoute] int id, [FromBody] CarEquipmentIdDto dto)
         {
-            var annoucementCarEquipmentObject = _service.AddEquipmentToAnnoucement(id, dto);
+            var annoucementCarEquipmentObject = _service.AddCarEquipmentToAnnoucement(id, dto);
             return Ok(annoucementCarEquipmentObject);
         }
 
