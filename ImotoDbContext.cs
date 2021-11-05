@@ -28,7 +28,6 @@ namespace imotoAPI.Entities
         public DbSet<CarTransmission> CarTransmissions { get; set; }
         public DbSet<CarYear> CarYears { get; set; }
         public DbSet<Moderator> Moderators { get; set; }
-        public DbSet<ModeratorType> ModeratorTypes { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<WatchedAnnoucement> WatchedAnnoucements { get; set; }
@@ -49,7 +48,6 @@ namespace imotoAPI.Entities
 
             //Moderator
             setFieldsOfModerator(modelBuilder);
-            setFieldsOfModeratorType(modelBuilder);
 
             //Car
             setFieldsOfCarTransmission(modelBuilder);
@@ -228,18 +226,6 @@ namespace imotoAPI.Entities
             modelBuilder.Entity<CarTransmission>()
                .Property(e => e.Description)
                .HasMaxLength(255);
-        }
-
-        private static void setFieldsOfModeratorType(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<ModeratorType>()
-                .Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(45);
-
-            modelBuilder.Entity<ModeratorType>()
-                .Property(e => e.Description)
-                .HasMaxLength(255);
         }
 
         private static void setFieldsOfModerator(ModelBuilder modelBuilder)

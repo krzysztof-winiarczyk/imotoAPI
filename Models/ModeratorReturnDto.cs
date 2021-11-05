@@ -10,8 +10,7 @@ namespace imotoAPI.Models
     {
         public int Id { get; set; }
 
-        public int TypeId { get; set; }
-        public ModeratorType Type { get; set; }
+        public ModeratorStatus Status { get; set; }
 
         public string Email { get; set; }
         public string Name { get; set; }

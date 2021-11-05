@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace imotoAPI.Services
 {
@@ -18,7 +17,7 @@ namespace imotoAPI.Services
         public ModeratorReturnDto Add(ModeratorGetDto dto);
         public ModeratorReturnDto UpdateContactInfo(int id, ModeratorUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
-        public ModeratorReturnDto ChangeType(int id, ModeratorTypeIdDto dto);
+        public ModeratorReturnDto ChangeStatus(int id, ModeratorStatusIdDto dto);
     }
 
     public class ModeratorService : IModeratorService
@@ -38,7 +37,7 @@ namespace imotoAPI.Services
         {
             var moderators = _dbContext
                 .Moderators
-                .Include(m => m.Type)
+                .Include(m => m.ModeratorStatus)
                 .ToList();
 
             var moderatorsDtos = new List<ModeratorReturnDto>();
@@ -56,7 +55,7 @@ namespace imotoAPI.Services
         {
             var moderator = _dbContext
                .Moderators
-               .Include(m => m.Type)
+               .Include(m => m.ModeratorStatus)
                .FirstOrDefault(m => m.Id == id);
 
             if (moderator is null)
@@ -73,7 +72,7 @@ namespace imotoAPI.Services
 
             var moderator = new Moderator()
             {
-                TypeId = dto.TypeId,
+                ModeratorStatusId = dto.StatusId,
                 Login = dto.Login,
                 Email = dto.Email,
                 Name = dto.Name,
@@ -93,7 +92,7 @@ namespace imotoAPI.Services
         {
             var moderator = _dbContext
                 .Moderators
-                .Include(m => m.Type)
+                .Include(m => m.ModeratorStatus)
                 .FirstOrDefault(m => m.Id == id);
 
             if (moderator is null)
@@ -135,7 +134,7 @@ namespace imotoAPI.Services
             }
         }
 
-        public ModeratorReturnDto ChangeType(int id, ModeratorTypeIdDto dto)
+        public ModeratorReturnDto ChangeStatus(int id, ModeratorStatusIdDto dto)
         {
             var moderator = _dbContext
                 .Moderators
@@ -144,24 +143,36 @@ namespace imotoAPI.Services
             if (moderator is null)
                 throw new NotFoundException("Not found");
 
-            moderator.TypeId = dto.TypeId;
+            //check if there would be at least one admin after changes
+            bool isModeratorAdmin = moderator.ModeratorStatusId == _dbContext.ModeratorStatuses.FirstOrDefault(s => s.Name == "admin").Id;
+            if (isModeratorAdmin)
+            {
+                int howManyAdmins = _dbContext
+                    .Moderators
+                    .Where(m => m.ModeratorStatus.Name == "admin")
+                    .ToList()
+                    .Count;
+
+                if (howManyAdmins <= 1)
+                    throw new NotAllowedException("Nie można dezaktywować jedynego konta administratora");
+            }
+
+            moderator.ModeratorStatusId = dto.StatusId;
             _dbContext.SaveChanges();
 
             moderator = _dbContext
                 .Moderators
-                .Include(m => m.Type)
+                .Include(m => m.ModeratorStatus)
                 .FirstOrDefault(m => m.Id == id);
             var moderatorDto = this.MapToReturnDto(moderator);
             return moderatorDto;
-
         }
 
         private ModeratorReturnDto MapToReturnDto (Moderator moderator)
         {
             var moderatorDto = new ModeratorReturnDto();
             moderatorDto.Id = moderator.Id;
-            moderatorDto.TypeId = moderator.TypeId;
-            moderatorDto.Type = moderator.Type;
+            moderatorDto.Status = moderator.ModeratorStatus;
             moderatorDto.Email = moderator.Email;
             moderatorDto.Name = moderator.Name;
             moderatorDto.PhoneNumber = moderator.PhoneNumber;

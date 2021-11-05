@@ -7,7 +7,7 @@ namespace imotoAPI.Models
 {
     public class ModeratorGetDto
     {
-        public int TypeId { get; set; }
+        public int StatusId { get; set; }
         public string Login { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace imotoAPI.Models
 {
-    public class ModeratorTypeIdDto
+    public class ModeratorStatusIdDto
     {
-        public int TypeId { get; set; }
+        public int StatusId { get; set; }
     }
 }

@@ -88,6 +88,12 @@ namespace imotoAPI
                 },
                 new ModeratorStatus()
                 {
+                     Name = "moderator danych",
+                    Description = "moderator zajmujący się aktualizowaniem bazy danych",
+                    Editable = false
+                },
+                new ModeratorStatus()
+                {
                     Name = "dezaktywowane",
                     Description = "konto wygasło",
                     Editable = false

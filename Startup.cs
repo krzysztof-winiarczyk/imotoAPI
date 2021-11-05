@@ -59,7 +59,6 @@ namespace imoto
             services.AddScoped<ICarModelService, CarModelService>();
             services.AddScoped<IAnnoucementService, AnnoucementService>();
 
-            services.AddScoped<IModertorTypeService, ModeratorTypeService>();
             services.AddScoped<IModeratorService, ModeratorService>();
 
             services.AddScoped<IUserService, UserService>();

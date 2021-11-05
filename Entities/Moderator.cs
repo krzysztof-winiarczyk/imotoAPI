@@ -9,9 +9,6 @@ namespace imotoAPI.Entities
     {
         public int Id { get; set; }
 
-        public int TypeId { get; set; }
-        public ModeratorType Type { get; set; }
-
         public int? ModeratorStatusId { get; set; }
         public ModeratorStatus ModeratorStatus { get; set; }
 

@@ -48,10 +48,10 @@ namespace imotoAPI.Controllers
             return Ok(moderatorDto);
         }
 
-        [HttpPut("{id}/type")]
-        public ActionResult<ModeratorReturnDto> UpdateType([FromRoute] int id, [FromBody] ModeratorTypeIdDto dto)
+        [HttpPut("{id}/status")]
+        public ActionResult<ModeratorReturnDto> UpdateStatus([FromRoute] int id, [FromBody] ModeratorStatusIdDto dto)
         {
-            var moderatorDto = _service.ChangeType(id, dto);
+            var moderatorDto = _service.ChangeStatus(id, dto);
             return Ok(moderatorDto);
         }
 
