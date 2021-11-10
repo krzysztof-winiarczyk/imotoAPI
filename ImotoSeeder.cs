@@ -1,4 +1,5 @@
 ﻿using imotoAPI.Entities;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,20 @@ namespace imotoAPI
                     var voivodeshpis = GetVoivodeships();
                     _dbContext.Voivodeships.AddRange(voivodeshpis);
                     _dbContext.SaveChanges();
+                }
+
+                if (!_dbContext.CarYears.Any())
+                {
+                    for (int i=1990; i<=2025; i++)
+                    {
+                        var year = new CarYear()
+                        {
+                            YearOfProduction = i
+                        };
+
+                        _dbContext.CarYears.Add(year);
+                        _dbContext.SaveChanges();
+                    }
                 }
             }
         }

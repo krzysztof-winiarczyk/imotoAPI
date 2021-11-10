@@ -20,7 +20,23 @@ namespace imotoAPI.Services
         /// Returns only active annoucements
         /// </summary>
         /// <returns>collection of active annoucements</returns>
-        public IEnumerable<AnnoucementReturnDto> Get();
+        public IEnumerable<AnnoucementReturnDto> Get(
+            int? carClassId,
+            int? carBrandId,
+            int? carModelId,
+            int? carColorId,
+            int? carBodyworkId,
+            int? carCountryId,
+            int? yearStart,
+            int? yearEnd,
+            int? carFuelId,
+            int? carDriveId,
+            int? carTransmissionId,
+            int? voivodeshipId,
+            int? priceStart,
+            int? priceEnd,
+            int? mileageStart,
+            int? mileageEnd);
 
         /// <summary>
         /// 
@@ -78,11 +94,30 @@ namespace imotoAPI.Services
         }
 
         
-        public IEnumerable<AnnoucementReturnDto> Get()
+        public IEnumerable<AnnoucementReturnDto> Get(
+            int? carClassId,
+            int? carBrandId,
+            int? carModelId,
+            int? carColorId,
+            int? carBodyworkId,
+            int? carCountryId,
+            int? yearStart,
+            int? yearEnd,
+            int? carFuelId,
+            int? carDriveId,
+            int? carTransmissionId,
+            int? voivodeshipId,
+            int? priceStart,
+            int? priceEnd,
+            int? mileageStart,
+            int? mileageEnd)
         {
             //TODO: add filtering and pagination
 
             var status = GetActiveStatus();
+
+            int? yearStartId = GetIdOfYear(yearStart);
+            int? yearEndId = GetIdOfYear(yearEnd);
 
             var annoucements = _dbContext
                 .Annoucements
@@ -96,7 +131,38 @@ namespace imotoAPI.Services
                 .Include(a => a.CarFuel)
                 .Include(a => a.CarDrive)
                 .Include(a => a.CarTransmission)
-                .Where(a => a.AnnoucementStatusId == status.Id)
+                .Where(a => a.AnnoucementStatusId == status.Id
+                    && (
+                        (carClassId == null || a.CarClassId == carClassId)
+                        && (carBrandId == null || a.CarBrandId == carBrandId)
+                        && (carModelId == null || a.CarModelId == carModelId)
+                        && (carColorId == null || a.CarColorId == carColorId)
+                        && (carBodyworkId == null || a.CarBodyworkId == carBodyworkId)
+                        && (carCountryId == null || a.CarCountryId == carCountryId)
+                        //year
+                        &&  (   (yearStartId == null && yearEndId == null)
+                            ||  (yearEndId == null && a.CarYearId >= yearStartId)
+                            ||  (yearStartId == null && a.CarYearId <= yearEndId)
+                            ||  (a.CarYearId >= yearStartId  && a.CarYearId <= yearEndId)
+                            )
+                        && (carFuelId == null || a.CarFuelId == carFuelId)
+                        && (carDriveId == null || a.CarDriveId == carDriveId)
+                        && (carTransmissionId == null || a.CarTransmissionId == carTransmissionId)
+                        //price
+                        &&  (   (priceStart == null && priceEnd == null)
+                            ||  (priceEnd == null && a.Price >= priceStart)
+                            ||  (priceStart == null && a.Price <= priceEnd)
+                            ||  (a.Price >= priceStart && a.Price <= priceEnd)
+                            )
+                        //mileage
+                        &&  (   (mileageStart == null && mileageEnd == null)
+                            ||  (mileageStart == null && a.Mileage <= mileageEnd)
+                            ||  (mileageEnd == null && a.Mileage >= mileageStart)
+                            ||  (a.Mileage >= mileageStart && a.Mileage <= mileageEnd)
+                            )
+                        && (voivodeshipId == null || a.VoivodeshipId == voivodeshipId)
+                    )
+                )
                 .ToList();
 
             var annoucementsDto = new List<AnnoucementReturnDto>();
@@ -398,6 +464,21 @@ namespace imotoAPI.Services
                 .FirstOrDefault(s => s.Name == "usunięte");
 
             return status;
+        }
+
+        private int? GetIdOfYear(int? year)
+        {
+            if (year == null)
+                return null;
+
+            var carYear = _dbContext
+                .CarYears
+                .FirstOrDefault(y => y.YearOfProduction == year);
+
+            if (carYear == null)
+                return null;
+            else
+                return carYear.Id;
         }
     }
 }
