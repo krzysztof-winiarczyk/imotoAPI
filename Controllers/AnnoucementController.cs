@@ -21,7 +21,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<AnnoucementReturnDto>> Get(
+        public ActionResult<PageResult<AnnoucementReturnDto>> Get(
             [FromQuery] int? carClassId,
             [FromQuery] int? carBrandId,
             [FromQuery] int? carModelId,
@@ -37,7 +37,9 @@ namespace imotoAPI.Controllers
             [FromQuery] int? priceStart,
             [FromQuery] int? priceEnd,
             [FromQuery] int? mileageStart,
-            [FromQuery] int? mileageEnd)
+            [FromQuery] int? mileageEnd,
+            [FromQuery] PaginationQuerry querry
+        )
         {
             var result = _service.Get(
                 carClassId,
@@ -55,7 +57,8 @@ namespace imotoAPI.Controllers
                 priceStart,
                 priceEnd,
                 mileageStart,
-                mileageEnd
+                mileageEnd,
+                querry
                 );
             return Ok(result);
         }

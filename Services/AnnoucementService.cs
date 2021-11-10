@@ -20,7 +20,7 @@ namespace imotoAPI.Services
         /// Returns only active annoucements
         /// </summary>
         /// <returns>collection of active annoucements</returns>
-        public IEnumerable<AnnoucementReturnDto> Get(
+        public PageResult<AnnoucementReturnDto> Get(
             int? carClassId,
             int? carBrandId,
             int? carModelId,
@@ -36,7 +36,8 @@ namespace imotoAPI.Services
             int? priceStart,
             int? priceEnd,
             int? mileageStart,
-            int? mileageEnd);
+            int? mileageEnd,
+            PaginationQuerry querry);
 
         /// <summary>
         /// 
@@ -94,7 +95,7 @@ namespace imotoAPI.Services
         }
 
         
-        public IEnumerable<AnnoucementReturnDto> Get(
+        public PageResult<AnnoucementReturnDto> Get(
             int? carClassId,
             int? carBrandId,
             int? carModelId,
@@ -110,7 +111,8 @@ namespace imotoAPI.Services
             int? priceStart,
             int? priceEnd,
             int? mileageStart,
-            int? mileageEnd)
+            int? mileageEnd,
+            PaginationQuerry querry)
         {
             //TODO: add filtering and pagination
 
@@ -119,7 +121,7 @@ namespace imotoAPI.Services
             int? yearStartId = GetIdOfYear(yearStart);
             int? yearEndId = GetIdOfYear(yearEnd);
 
-            var annoucements = _dbContext
+            var baseQuerry = _dbContext
                 .Annoucements
                 .Include(a => a.CarClass)
                 .Include(a => a.CarBrand)
@@ -140,30 +142,38 @@ namespace imotoAPI.Services
                         && (carBodyworkId == null || a.CarBodyworkId == carBodyworkId)
                         && (carCountryId == null || a.CarCountryId == carCountryId)
                         //year
-                        &&  (   (yearStartId == null && yearEndId == null)
-                            ||  (yearEndId == null && a.CarYearId >= yearStartId)
-                            ||  (yearStartId == null && a.CarYearId <= yearEndId)
-                            ||  (a.CarYearId >= yearStartId  && a.CarYearId <= yearEndId)
+                        && ((yearStartId == null && yearEndId == null)
+                            || (yearEndId == null && a.CarYearId >= yearStartId)
+                            || (yearStartId == null && a.CarYearId <= yearEndId)
+                            || (a.CarYearId >= yearStartId && a.CarYearId <= yearEndId)
                             )
                         && (carFuelId == null || a.CarFuelId == carFuelId)
                         && (carDriveId == null || a.CarDriveId == carDriveId)
                         && (carTransmissionId == null || a.CarTransmissionId == carTransmissionId)
                         //price
-                        &&  (   (priceStart == null && priceEnd == null)
-                            ||  (priceEnd == null && a.Price >= priceStart)
-                            ||  (priceStart == null && a.Price <= priceEnd)
-                            ||  (a.Price >= priceStart && a.Price <= priceEnd)
+                        && ((priceStart == null && priceEnd == null)
+                            || (priceEnd == null && a.Price >= priceStart)
+                            || (priceStart == null && a.Price <= priceEnd)
+                            || (a.Price >= priceStart && a.Price <= priceEnd)
                             )
                         //mileage
-                        &&  (   (mileageStart == null && mileageEnd == null)
-                            ||  (mileageStart == null && a.Mileage <= mileageEnd)
-                            ||  (mileageEnd == null && a.Mileage >= mileageStart)
-                            ||  (a.Mileage >= mileageStart && a.Mileage <= mileageEnd)
+                        && ((mileageStart == null && mileageEnd == null)
+                            || (mileageStart == null && a.Mileage <= mileageEnd)
+                            || (mileageEnd == null && a.Mileage >= mileageStart)
+                            || (a.Mileage >= mileageStart && a.Mileage <= mileageEnd)
                             )
                         && (voivodeshipId == null || a.VoivodeshipId == voivodeshipId)
                     )
-                )
+                );
+
+            var totalItemsCount = baseQuerry.Count();
+
+            querry.Validate();
+            var annoucements = baseQuerry
+                .Skip(querry.PageSize * (querry.PageNumber - 1))
+                .Take(querry.PageSize)
                 .ToList();
+
 
             var annoucementsDto = new List<AnnoucementReturnDto>();
 
@@ -196,13 +206,13 @@ namespace imotoAPI.Services
                 dto.CarEquipment = GetCarEquipmentOfAnnoucement(a.Id);
                 dto.CarStatuses = GetCarStatusesOfAnnoucement(a.Id);
 
-                //TODO: include car equipment
-                //TODO: include car statuses
-
                 annoucementsDto.Add(dto);
             }
 
-            return annoucementsDto;
+
+            PageResult<AnnoucementReturnDto> result = new (annoucementsDto, totalItemsCount, querry.PageSize, querry.PageNumber);
+
+            return result;
         }
 
         
