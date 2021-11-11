@@ -38,7 +38,8 @@ namespace imotoAPI.Controllers
             [FromQuery] int? priceEnd,
             [FromQuery] int? mileageStart,
             [FromQuery] int? mileageEnd,
-            [FromQuery] PaginationQuerry querry
+            [FromQuery] PaginationQuerry paginationQuerry,
+            [FromQuery] SortQuerry sortQuerry
         )
         {
             var result = _service.Get(
@@ -58,7 +59,8 @@ namespace imotoAPI.Controllers
                 priceEnd,
                 mileageStart,
                 mileageEnd,
-                querry
+                paginationQuerry,
+                sortQuerry
                 );
             return Ok(result);
         }

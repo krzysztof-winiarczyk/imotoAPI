@@ -37,7 +37,8 @@ namespace imotoAPI.Services
             int? priceEnd,
             int? mileageStart,
             int? mileageEnd,
-            PaginationQuerry querry);
+            PaginationQuerry paginationQuerry,
+            SortQuerry sortQuerry);
 
         /// <summary>
         /// 
@@ -112,7 +113,8 @@ namespace imotoAPI.Services
             int? priceEnd,
             int? mileageStart,
             int? mileageEnd,
-            PaginationQuerry querry)
+            PaginationQuerry paginationQuerry,
+            SortQuerry sortQuerry)
         {
             //TODO: add filtering and pagination
 
@@ -168,10 +170,29 @@ namespace imotoAPI.Services
 
             var totalItemsCount = baseQuerry.Count();
 
-            querry.Validate();
+            //sorting
+            sortQuerry.Validate();
+            var columnsSelector = new Dictionary<string, Expression<Func<Annoucement, object>>>()
+            {
+                {nameof(Annoucement.CarYear), a => a.CarYear },
+                {nameof(Annoucement.Price), a => a.Price },
+                {nameof(Annoucement.Mileage), a => a.Mileage }
+            };
+            var selectedColumn = columnsSelector[sortQuerry.SortBy];
+            if (sortQuerry.SortDirection == "asc")
+            {
+                baseQuerry = baseQuerry.OrderBy(selectedColumn);
+            }
+            else
+            {
+                baseQuerry = baseQuerry.OrderByDescending(selectedColumn);
+            }
+
+            //pagination
+            paginationQuerry.Validate();
             var annoucements = baseQuerry
-                .Skip(querry.PageSize * (querry.PageNumber - 1))
-                .Take(querry.PageSize)
+                .Skip(paginationQuerry.PageSize * (paginationQuerry.PageNumber - 1))
+                .Take(paginationQuerry.PageSize)
                 .ToList();
 
 
@@ -210,7 +231,7 @@ namespace imotoAPI.Services
             }
 
 
-            PageResult<AnnoucementReturnDto> result = new (annoucementsDto, totalItemsCount, querry.PageSize, querry.PageNumber);
+            PageResult<AnnoucementReturnDto> result = new (annoucementsDto, totalItemsCount, paginationQuerry.PageSize, paginationQuerry.PageNumber);
 
             return result;
         }
