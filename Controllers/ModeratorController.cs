@@ -41,6 +41,13 @@ namespace imotoAPI.Controllers
             return moderatorDto;
         }
 
+        [HttpPost("login")]
+        public ActionResult Login([FromBody] LoginDto dto)
+        {
+            string token = _service.GenerateJwt(dto);
+            return Ok(token);
+        }
+
         [HttpPut("{id}/contactInfo")]
         public ActionResult<ModeratorReturnDto> UpdateContactInfo([FromRoute] int id, [FromBody] ModeratorUpdateDto dto)
         {

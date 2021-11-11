@@ -4,9 +4,13 @@ using imotoAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 
 namespace imotoAPI.Services
 {
@@ -15,6 +19,7 @@ namespace imotoAPI.Services
         public IEnumerable<ModeratorReturnDto> GetAll();
         public ModeratorReturnDto GetById(int id);
         public ModeratorReturnDto Add(ModeratorGetDto dto);
+        public string GenerateJwt(LoginDto dto);
         public ModeratorReturnDto UpdateContactInfo(int id, ModeratorUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
         public ModeratorReturnDto ChangeStatus(int id, ModeratorStatusIdDto dto);
@@ -24,13 +29,16 @@ namespace imotoAPI.Services
     {
         private readonly ImotoDbContext _dbContext;
         private readonly IPasswordHasher<Moderator> _passwordHasher;
+        private readonly AuthenticationSettings _authenticationSettings;
 
         public ModeratorService(
             ImotoDbContext dbContext,
-            IPasswordHasher<Moderator> passwordHasher)
+            IPasswordHasher<Moderator> passwordHasher,
+            AuthenticationSettings authenticationSettings)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
+            _authenticationSettings = authenticationSettings;
         }
 
         public IEnumerable<ModeratorReturnDto> GetAll()
@@ -86,6 +94,40 @@ namespace imotoAPI.Services
 
             var returnDto = this.MapToReturnDto(moderator);
             return returnDto;
+        }
+
+        public string GenerateJwt(LoginDto dto)
+        {
+            var moderator = _dbContext
+                .Moderators
+                .Include(m => m.ModeratorStatus)
+                .FirstOrDefault(m => m.Login == dto.Login);
+
+            if (moderator is null)
+                throw new IncorrectLoggingException("Incorrect login or password");
+
+            var result = _passwordHasher.VerifyHashedPassword(moderator, moderator.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+                throw new IncorrectLoggingException("Incorrect login or password");
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, moderator.Id.ToString()),
+                new Claim(ClaimTypes.Role, moderator.ModeratorStatus.Name)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(_authenticationSettings.JwtExpireDays);
+
+            var token = new JwtSecurityToken(_authenticationSettings.JwtIssuer,
+                _authenticationSettings.JwtIssuer,
+                claims,
+                expires: expires,
+                signingCredentials: credentials);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);
         }
 
         public ModeratorReturnDto UpdateContactInfo(int id, ModeratorUpdateDto dto)
