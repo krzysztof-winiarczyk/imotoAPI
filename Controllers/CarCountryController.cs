@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<CarCountry>> GetAll()
         {
             var carCountries = _service.GetAll();
@@ -28,14 +30,16 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CarClass> Add([FromBody] CarCountryDto dto)
+        [Authorize(Roles = "admin, moderator treści")]
+        public ActionResult<CarCountry> Add([FromBody] CarCountryDto dto)
         {
             var carCountry = _service.Add(dto);
             return Ok(carCountry);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<CarClass> Edit([FromRoute] int id, [FromBody] CarCountryDto dto)
+        [Authorize(Roles = "admin, moderator treści")]
+        public ActionResult<CarCountry> Edit([FromRoute] int id, [FromBody] CarCountryDto dto)
         {
             var carCountry = _service.Update(id, dto);
             return Ok(carCountry);

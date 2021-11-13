@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,6 +23,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<Voivodeship>> GetAll()
         {
             var voivodeships = _service.GetAll();
@@ -29,6 +31,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<Voivodeship> GetById([FromRoute] int id)
         {
             var voivodeship = _service.GetById(id);
@@ -36,6 +39,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin, moderator treści")]
         public ActionResult<Voivodeship> Add([FromBody] VoivodeshipDto dto)
         {
             var voivodeship = _service.Add(dto);
@@ -43,6 +47,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, moderator treści")]
         public ActionResult<Voivodeship> Update([FromRoute] int id, [FromBody] VoivodeshipDto dto)
         {
             var voivodeship = _service.Update(id, dto);

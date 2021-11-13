@@ -1,5 +1,6 @@
 ﻿using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -20,64 +21,82 @@ namespace imotoAPI.Controllers
             _service = service;
         }
 
-        //for admin
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public ActionResult<IEnumerable<UserReturnForAdminDto>> GetAll()
         {
             var users = _service.GetAll();
             return Ok(users);
         }
 
-        //for all
         [HttpGet("{id}")]
-        public ActionResult<UserReturnDto> GetAll([FromRoute] int id)
+        [AllowAnonymous]
+        public ActionResult<UserReturnDto> GetById([FromRoute] int id)
         {
             var user = _service.GetById(id);
             return Ok(user);
         }
 
-        //for user
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult<UserReturnForAdminDto> Add([FromBody] UserGetDto dto)
         {
             var user = _service.Add(dto);
             return Ok(user);
         }
 
-        //for user
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public ActionResult Login([FromBody] LoginDto dto)
+        {
+            var token = _service.GenerateJwt(dto);
+            return Ok(token);
+        }
+
         [HttpPut("{id}/contactInfo")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult<UserReturnForAdminDto> UpdateContactInfo([FromRoute] int id, [FromBody] UserUpdateDto dto)
         {
             var user = _service.UpdateContactInfo(id, dto);
             return Ok(user);
         }
 
-        //for user
         [HttpPut("{id}/password")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult ChangePassword([FromRoute] int id, [FromBody] PasswordDto dto)
         {
             _service.ChangePassword(id, dto);
             return Ok();
         }
 
-        //for user
         [HttpGet("{id}/watchedAnnoucements")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult<IEnumerable<AnnoucementReturnDto>> GetWatchedAnnoucements([FromRoute] int id)
         {
             var annoucements = _service.GetWatchedAnnoucements(id);
             return Ok(annoucements);
         }
 
-        //for user
         [HttpGet("{id}/watchedUsers")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult<IEnumerable<UserReturnDto>> GetWatchedUsers([FromRoute] int id)
         {
             var users = _service.GetWatchedUsers(id);
             return Ok(users);
         }
 
-        //for user
         [HttpDelete("{id}")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult DeleteAccount([FromRoute] int id)
         {
             _service.DeleteAccount(id);

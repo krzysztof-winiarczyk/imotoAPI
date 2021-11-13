@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<PageResult<AnnoucementReturnDto>> Get(
             [FromQuery] int? carClassId,
             [FromQuery] int? carBrandId,
@@ -66,6 +68,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<AnnoucementReturnDto>> GetById([FromRoute] int id)
         {
             var result = _service.GetById(id);
@@ -73,6 +76,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "użytkownik")]
         public ActionResult<Annoucement> AddAnnoucement([FromBody] AnnoucementGetDto dto)
         {
             var annoucement = _service.AddAnnoucement(dto);
@@ -80,6 +84,8 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "użytkownik")]
+        //TODO: chceck id of user
         public ActionResult<Annoucement> EditAnnoucement([FromRoute] int id, [FromBody] AnnoucementGetDto dto)
         {
             var annoucement = _service.EditAnnoucement(id, dto);
@@ -87,6 +93,9 @@ namespace imotoAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult DeleteAnnoucement([FromRoute] int id)
         {
             _service.DeleteAnnoucement(id);
@@ -94,6 +103,9 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost("{id}/status")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult<Annoucement_CarStatus> AddStatusToAnnoucement([FromRoute] int id, [FromBody] CarStatusIdDto dto) 
         {
             var annoucementCarStatusObject = _service.AddCarStatusToAnnoucement(id, dto);
@@ -101,6 +113,9 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost("{id}/equipment")]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult<Annoucement_CarStatus> AddEquipmentToAnnoucement([FromRoute] int id, [FromBody] CarEquipmentIdDto dto)
         {
             var annoucementCarEquipmentObject = _service.AddCarEquipmentToAnnoucement(id, dto);

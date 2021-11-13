@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<CarBrand>> GetAllCarBrands()
         {
             var allBrands = _carBrandService.GetAll();
@@ -29,6 +31,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<CarBrandWithModelsDto> GetCarBrand([FromRoute] int id)
         {
             var carBrandWithModels = _carBrandService.GetCarBrand(id);
@@ -36,6 +39,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin, moderator treści")]
         public ActionResult<CarBrand> AddCarBrand(CarBrandDto dto)
         {
             var carBrand = _carBrandService.Add(dto);
@@ -43,6 +47,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, moderator treści")]
         public ActionResult<CarBrand> EditCarBrand(int id, CarBrandDto dto)
         {
             var carBrand = _carBrandService.Edit(id, dto);

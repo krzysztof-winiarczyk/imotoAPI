@@ -1,5 +1,6 @@
 ﻿using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,6 +22,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public ActionResult<IEnumerable<ModeratorReturnDto>> GetAll()
         {
             var moderators = _service.GetAll();
@@ -28,6 +30,8 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin, moderator danych")]
+        //TODO: chceck id of moderator 
         public ActionResult<ModeratorReturnDto> GetById([FromRoute] int id)
         {
             var moderatorDto = _service.GetById(id);
@@ -35,6 +39,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public ActionResult<ModeratorReturnDto> Add([FromBody] ModeratorGetDto dto)
         {
             var moderatorDto = _service.Add(dto);
@@ -42,6 +47,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public ActionResult Login([FromBody] LoginDto dto)
         {
             string token = _service.GenerateJwt(dto);
@@ -49,6 +55,8 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}/contactInfo")]
+        [Authorize(Roles = "admin, moderator danych")]
+        //TODO: chceck id of moderator 
         public ActionResult<ModeratorReturnDto> UpdateContactInfo([FromRoute] int id, [FromBody] ModeratorUpdateDto dto)
         {
             var moderatorDto = _service.UpdateContactInfo(id, dto);
@@ -56,6 +64,8 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}/status")]
+        [Authorize(Roles = "admin, moderator danych")]
+        //TODO: chceck id of moderator 
         public ActionResult<ModeratorReturnDto> UpdateStatus([FromRoute] int id, [FromBody] ModeratorStatusIdDto dto)
         {
             var moderatorDto = _service.ChangeStatus(id, dto);
@@ -63,6 +73,8 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}/password")]
+        [Authorize(Roles = "admin, moderator danych")]
+        //TODO: chceck id of moderator
         public ActionResult ChangePassword([FromRoute] int id, [FromBody] PasswordDto dto)
         {
             _service.ChangePassword(id, dto);

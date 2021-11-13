@@ -1,5 +1,6 @@
 ﻿using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,6 +22,8 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
         public ActionResult<WatchedAnnoucementReturnDto> Add([FromBody] WatchedAnnoucementDto dto)
         {
             var watchedAnnoucement = _service.Add(dto);
@@ -28,6 +31,9 @@ namespace imotoAPI.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "użytkownik")]
+        [Authorize(Roles = "admin")]
+        //TODO: chceck id of user
         public ActionResult Delete([FromBody] WatchedAnnoucementDto dto)
         {
             _service.Delete(dto);

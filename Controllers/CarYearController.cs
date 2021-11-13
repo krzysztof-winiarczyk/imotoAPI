@@ -1,11 +1,14 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+//authorization done
 
 namespace imotoAPI.Controllers
 {
@@ -27,6 +30,7 @@ namespace imotoAPI.Controllers
             return Ok(collection);
         }
 
+        [Authorize(Roles = "admin, moderator danych")]
         [HttpPost]
         public ActionResult<CarYear> Add([FromBody] CarYearDto dto)
         {
@@ -34,6 +38,7 @@ namespace imotoAPI.Controllers
             return Ok(carYear);
         }
 
+        [Authorize(Roles = "admin, moderator danych")]
         [HttpPut("{id}")]
         public ActionResult<CarYear> Update([FromRoute] int id, [FromBody] CarYearDto dto)
         {

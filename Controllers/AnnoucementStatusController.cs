@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<AnnoucementStatus>> GetAll()
         {
             var statuses = _service.GetAll();
@@ -28,6 +30,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<AnnoucementStatus> GetById([FromRoute] int id)
         {
             var status = _service.GetById(id);
@@ -35,6 +38,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin, moderator treści")]
         public ActionResult<AnnoucementStatus> Add([FromBody] AnnoucementStatusDto dto)
         {
             var status = _service.Add(dto);
@@ -42,6 +46,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, moderator treści")]
         public ActionResult<AnnoucementStatus> Update([FromRoute] int id, [FromBody] AnnoucementStatusDto dto)
         {
             var status = _service.Update(id, dto);

@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Models;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,6 +23,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<UserType>> GetAll()
         {
             var userTypes = _service.GetAll();
@@ -29,6 +31,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<UserType> GetAll([FromRoute] int id)
         {
             var userType = _service.GetById(id);
@@ -36,6 +39,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public ActionResult<UserType> Post([FromBody] UserTypeDto dto)
         {
             var userType = _service.Add(dto);
@@ -43,6 +47,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public ActionResult<UserType> Update([FromRoute] int id, [FromBody] UserTypeDto dto)
         {
             var userType = _service.Edit(id, dto);

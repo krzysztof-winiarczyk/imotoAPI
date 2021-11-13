@@ -5,9 +5,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace imotoAPI.Services
@@ -18,6 +22,7 @@ namespace imotoAPI.Services
         public UserReturnDto GetById(int id);
         public void DeleteAccount(int id);
         public UserReturnForAdminDto Add(UserGetDto dto);
+        public string GenerateJwt(LoginDto dto);
         public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
         public IEnumerable<AnnoucementReturnDto> GetWatchedAnnoucements(int id);
@@ -28,15 +33,18 @@ namespace imotoAPI.Services
     {
         private readonly ImotoDbContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly AuthenticationSettings _authenticationSettings;
         private readonly IAnnoucementService _annoucementService;
 
         public UserService(
             ImotoDbContext dbContext,
             IPasswordHasher<User> passwordHasher,
+            AuthenticationSettings authenticationSettings,
             IAnnoucementService annoucementService)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
+            _authenticationSettings = authenticationSettings;
             _annoucementService = annoucementService;
         }
 
@@ -166,6 +174,43 @@ namespace imotoAPI.Services
 
             var returnDto = MapToReturnForAdminDto(user);
             return returnDto;
+        }
+
+        public string GenerateJwt(LoginDto dto)
+        {
+            var user = _dbContext
+                .Users
+                .Include(u => u.UserStatus)
+                .FirstOrDefault(u => u.Login == dto.Login);
+
+            if (user is null)
+                throw new IncorrectLoggingException("Incorrect login or passwor");
+
+            if (user.UserStatus == GetStatusDezaktywowane())
+                throw new IncorrectLoggingException("Incorrect login or passwor");
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+            if (result == PasswordVerificationResult.Failed)
+                throw new IncorrectLoggingException("Incorrect login or password");
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, "użytkownik")
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(_authenticationSettings.JwtExpireDays);
+
+            var token = new JwtSecurityToken(_authenticationSettings.JwtIssuer,
+                _authenticationSettings.JwtIssuer,
+                claims,
+                expires: expires,
+                signingCredentials: credentials);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);
         }
 
         public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto)
@@ -313,6 +358,15 @@ namespace imotoAPI.Services
                 return true;
             else
                 return false;
+        }
+
+        private UserStatus GetStatusDezaktywowane()
+        {
+            var status = _dbContext
+                .UserStatuses
+                .FirstOrDefault(s => s.Name == "dezaktywowane");
+
+            return status;
         }
     }
 }
