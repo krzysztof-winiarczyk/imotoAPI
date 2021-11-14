@@ -7,7 +7,7 @@ namespace imotoAPI.Models
 {
     public class AnnoucementGetDto
     {
-        public int UserId { get; set; }
+        //public int UserId { get; set; }
 
         public int? CarClassId { get; set; }
 

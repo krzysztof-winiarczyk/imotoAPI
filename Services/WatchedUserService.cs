@@ -19,10 +19,12 @@ namespace imotoAPI.Services
     public class WatchedUserService : IWatchedUserService
     {
         private readonly ImotoDbContext _dbContext;
+        private readonly IUserContextService _userContextService;
 
-        public WatchedUserService(ImotoDbContext dbContext)
+        public WatchedUserService(ImotoDbContext dbContext, IUserContextService userContextService)
         {
             _dbContext = dbContext;
+            _userContextService = userContextService;
         }
 
 
@@ -60,6 +62,9 @@ namespace imotoAPI.Services
 
             if (watchedUser is null)
                 throw new NotFoundException("Not found");
+
+            if (_userContextService.GetUserRole == "użytkownik" && _userContextService.GetUserId != watchedUser.FollowerId)
+                throw new ForbidException("");
 
             _dbContext.WatchedUsers.Remove(watchedUser);
             _dbContext.SaveChanges();

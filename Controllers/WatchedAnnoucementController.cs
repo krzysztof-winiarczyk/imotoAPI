@@ -22,8 +22,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult<WatchedAnnoucementReturnDto> Add([FromBody] WatchedAnnoucementDto dto)
         {
             var watchedAnnoucement = _service.Add(dto);
@@ -31,9 +30,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult Delete([FromBody] WatchedAnnoucementDto dto)
         {
             _service.Delete(dto);

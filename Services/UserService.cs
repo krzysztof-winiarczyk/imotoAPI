@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Exceptions;
 using imotoAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -35,17 +36,20 @@ namespace imotoAPI.Services
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
         private readonly IAnnoucementService _annoucementService;
+        private readonly IUserContextService _userContextService;
 
         public UserService(
             ImotoDbContext dbContext,
             IPasswordHasher<User> passwordHasher,
             AuthenticationSettings authenticationSettings,
-            IAnnoucementService annoucementService)
+            IAnnoucementService annoucementService,
+            IUserContextService userContextService)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
             _annoucementService = annoucementService;
+            _userContextService = userContextService;
         }
 
         //for admin
@@ -96,6 +100,9 @@ namespace imotoAPI.Services
 
             if (user is null)
                 throw new NotFoundException("Not found");
+
+            if (_userContextService.GetUserRole == "użytkownik" && _userContextService.GetUserId != user.Id)
+                throw new ForbidException("");
 
             //set status "dezaktywowane"
             var userStatus = _dbContext
@@ -223,6 +230,10 @@ namespace imotoAPI.Services
             if (user is null)
                 throw new NotFoundException("Not found");
 
+            var role = _userContextService.GetUserRole;
+            if (role == "użytkownik" && user.Id != _userContextService.GetUserId)
+                throw new ForbidException("");
+
             user.Email = dto.Email;
             user.Name = dto.Name;
             user.Surname = dto.Surname;
@@ -249,6 +260,9 @@ namespace imotoAPI.Services
             if (user is null)
                 throw new NotFoundException("Not found");
 
+            if (_userContextService.GetUserRole == "użytkownik" && _userContextService.GetUserId != user.Id)
+                throw new ForbidException("");
+
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, passwordDto.OldPassword);
             if (result == PasswordVerificationResult.Success)
             {
@@ -274,6 +288,9 @@ namespace imotoAPI.Services
                 .Where(wa => wa.UserId == id)
                 .ToList();
 
+            if (_userContextService.GetUserRole == "użytkownik" && _userContextService.GetUserId != id)
+                throw new ForbidException("");
+
             var annoucements = new List<AnnoucementReturnDto>();
 
             foreach(WatchedAnnoucement wa in watchedAnnoucements)
@@ -291,6 +308,9 @@ namespace imotoAPI.Services
                 .WatchedUsers
                 .Where(wa => wa.FollowerId == id)
                 .ToList();
+
+            if (_userContextService.GetUserRole == "użytkownik" && _userContextService.GetUserId != id)
+                throw new ForbidException("");
 
             var users = new List<UserReturnDto>();
 

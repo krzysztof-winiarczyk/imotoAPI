@@ -2,6 +2,7 @@ using imotoAPI;
 using imotoAPI.Entities;
 using imotoAPI.Middleware;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -56,6 +57,11 @@ namespace imoto
                 };
             });
             //--authentication
+
+            //services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
+
+            services.AddScoped<IUserContextService, UserContextService>();
+            services.AddHttpContextAccessor();
 
             services.AddCors();
             services.AddControllers();

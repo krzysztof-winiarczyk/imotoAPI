@@ -1,6 +1,7 @@
 ﻿using imotoAPI.Entities;
 using imotoAPI.Exceptions;
 using imotoAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace imotoAPI.Services
@@ -89,10 +91,14 @@ namespace imotoAPI.Services
     public class AnnoucementService : IAnnoucementService
     {
         private readonly ImotoDbContext _dbContext;
+        private readonly IUserContextService _userContextService;
 
-        public AnnoucementService(ImotoDbContext dbContext)
+        public AnnoucementService(
+            ImotoDbContext dbContext,
+            IUserContextService userContextService)
         {
             _dbContext = dbContext;
+            _userContextService = userContextService;
         }
 
         
@@ -116,7 +122,6 @@ namespace imotoAPI.Services
             PaginationQuerry paginationQuerry,
             SortQuerry sortQuerry)
         {
-            //TODO: add filtering and pagination
 
             var status = GetActiveStatus();
 
@@ -294,7 +299,7 @@ namespace imotoAPI.Services
             var status = GetActiveStatus();
 
             var annoucement = new Annoucement();
-            annoucement.UserId = dto.UserId;
+            annoucement.UserId = _userContextService.GetUserId;
             annoucement.CarClassId = dto.CarClassId;
             annoucement.CarBrandId = dto.CarBrandId;
             annoucement.CarBrandSpare = dto.CarBrandSpare;
@@ -313,11 +318,13 @@ namespace imotoAPI.Services
             annoucement.Mileage = dto.Mileage;
             annoucement.Description = dto.Description;
             annoucement.AnnoucementStatusId = status.Id;
+            //TODO: voivodeship
 
             _dbContext.Add(annoucement);
             _dbContext.SaveChanges();
 
             return annoucement;
+            //TODO: return annoucement with including all informations
         }
 
         public Annoucement EditAnnoucement(int id, AnnoucementGetDto dto)
@@ -329,7 +336,10 @@ namespace imotoAPI.Services
             if (annoucement is null)
                 throw new NotFoundException("Not found");
 
-            annoucement.UserId = dto.UserId;
+            //check if annoucement belongs to user
+            if (annoucement.UserId != _userContextService.GetUserId)
+                throw new ForbidException("");
+
             annoucement.CarClassId = dto.CarClassId;
             annoucement.CarBrandId = dto.CarBrandId;
             annoucement.CarBrandSpare = dto.CarBrandSpare;
@@ -347,12 +357,12 @@ namespace imotoAPI.Services
             annoucement.Price = dto.Price;
             annoucement.Mileage = dto.Mileage;
             annoucement.Description = dto.Description;
+            //TODO: voivodeship
 
-            _dbContext.Add(annoucement);
             _dbContext.SaveChanges();
 
             return annoucement;
-
+            //TODO: return annoucement with including all informations
         }
 
         public void DeleteAnnoucement (int id)
@@ -363,6 +373,12 @@ namespace imotoAPI.Services
                 .FirstOrDefault(a => a.Id == id);
             if (annoucement is null)
                 throw new NotFoundException("Not found");
+
+            //check if annoucement belongs to user invoking action or if user is admin
+            string userRole = _userContextService.GetUserRole;
+            int userId = _userContextService.GetUserId;
+            if (userRole == "użytkownik" && userId != annoucement.UserId)
+                throw new ForbidException("");
 
             //set status for annoucement
             var statusDeleted = GetDeletedStatus();
@@ -390,6 +406,12 @@ namespace imotoAPI.Services
             if (annoucement is null)
                 throw new NotFoundException("Not found");
 
+            //check if annoucement belongs to user invoking action or if user is admin
+            string userRole = _userContextService.GetUserRole;
+            int userId = _userContextService.GetUserId;
+            if (userRole == "użytkownik" && userId != annoucement.UserId)
+                throw new ForbidException("");
+
             var carStatus = _dbContext
                 .CarStatuses
                 .FirstOrDefault(cs => cs.Id == dto.CarStatusId);
@@ -415,6 +437,13 @@ namespace imotoAPI.Services
 
             if (annoucement is null)
                 throw new NotFoundException("Not found");
+
+            //check if annoucement belongs to user invoking action or if user is admin
+            string userRole = _userContextService.GetUserRole;
+            int userId = _userContextService.GetUserId;
+            if (userRole == "użytkownik" && userId != annoucement.UserId)
+                throw new ForbidException("");
+
 
             var equipment = _dbContext
                 .CarEquipment

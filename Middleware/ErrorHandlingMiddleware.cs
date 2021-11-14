@@ -21,6 +21,11 @@ namespace imotoAPI.Middleware
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
+            catch (ForbidException forbidException)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync(forbidException.Message);
+            }
             catch (NotAllowedException notAllowedException)
             {
                 context.Response.StatusCode = 405;
@@ -54,7 +59,7 @@ namespace imotoAPI.Middleware
             catch(Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateException)
             {
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync(dbUpdateException.Message);
+                await context.Response.WriteAsync("Bad request");
             }
         }
     }

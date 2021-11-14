@@ -30,15 +30,18 @@ namespace imotoAPI.Services
         private readonly ImotoDbContext _dbContext;
         private readonly IPasswordHasher<Moderator> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
+        private readonly IUserContextService _userContextService;
 
         public ModeratorService(
             ImotoDbContext dbContext,
             IPasswordHasher<Moderator> passwordHasher,
-            AuthenticationSettings authenticationSettings)
+            AuthenticationSettings authenticationSettings,
+            IUserContextService userContextService)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
+            _userContextService = userContextService;
         }
 
         public IEnumerable<ModeratorReturnDto> GetAll()
@@ -68,6 +71,9 @@ namespace imotoAPI.Services
 
             if (moderator is null)
                 throw new NotFoundException("Not found");
+
+            if (_userContextService.GetUserRole == "moderator danych" && _userContextService.GetUserId != moderator.Id)
+                throw new ForbidException("");
 
             var moderatorDto = this.MapToReturnDto(moderator);
             return moderatorDto;
@@ -140,6 +146,9 @@ namespace imotoAPI.Services
             if (moderator is null)
                 throw new NotFoundException("Not found");
 
+            if (_userContextService.GetUserRole == "moderator danych" && _userContextService.GetUserId != moderator.Id)
+                throw new ForbidException("");
+
             moderator.Email = dto.Email;
             moderator.Name = dto.Name;
             moderator.PhoneNumber = dto.PhoneNumber;
@@ -157,6 +166,9 @@ namespace imotoAPI.Services
 
             if (moderator is null)
                 throw new NotFoundException("Not found");
+
+            if (_userContextService.GetUserRole == "moderator danych" && _userContextService.GetUserId != moderator.Id)
+                throw new ForbidException("");
 
             var result = _passwordHasher.VerifyHashedPassword(moderator, moderator.PasswordHash, passwordDto.OldPassword);
             if (result == PasswordVerificationResult.Success)
@@ -184,6 +196,9 @@ namespace imotoAPI.Services
 
             if (moderator is null)
                 throw new NotFoundException("Not found");
+
+            if (_userContextService.GetUserRole == "moderator danych" && _userContextService.GetUserId != moderator.Id)
+                throw new ForbidException("");
 
             //check if there would be at least one admin after changes
             bool isModeratorAdmin = moderator.ModeratorStatusId == _dbContext.ModeratorStatuses.FirstOrDefault(s => s.Name == "admin").Id;

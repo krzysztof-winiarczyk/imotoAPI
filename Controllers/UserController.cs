@@ -54,9 +54,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}/contactInfo")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult<UserReturnForAdminDto> UpdateContactInfo([FromRoute] int id, [FromBody] UserUpdateDto dto)
         {
             var user = _service.UpdateContactInfo(id, dto);
@@ -64,9 +62,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPut("{id}/password")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult ChangePassword([FromRoute] int id, [FromBody] PasswordDto dto)
         {
             _service.ChangePassword(id, dto);
@@ -74,9 +70,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}/watchedAnnoucements")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult<IEnumerable<AnnoucementReturnDto>> GetWatchedAnnoucements([FromRoute] int id)
         {
             var annoucements = _service.GetWatchedAnnoucements(id);
@@ -84,9 +78,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet("{id}/watchedUsers")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult<IEnumerable<UserReturnDto>> GetWatchedUsers([FromRoute] int id)
         {
             var users = _service.GetWatchedUsers(id);
@@ -94,9 +86,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult DeleteAccount([FromRoute] int id)
         {
             _service.DeleteAccount(id);

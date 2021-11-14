@@ -85,7 +85,6 @@ namespace imotoAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "użytkownik")]
-        //TODO: chceck id of user
         public ActionResult<Annoucement> EditAnnoucement([FromRoute] int id, [FromBody] AnnoucementGetDto dto)
         {
             var annoucement = _service.EditAnnoucement(id, dto);
@@ -93,9 +92,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult DeleteAnnoucement([FromRoute] int id)
         {
             _service.DeleteAnnoucement(id);
@@ -103,24 +100,23 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost("{id}/status")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult<Annoucement_CarStatus> AddStatusToAnnoucement([FromRoute] int id, [FromBody] CarStatusIdDto dto) 
         {
             var annoucementCarStatusObject = _service.AddCarStatusToAnnoucement(id, dto);
             return Ok(annoucementCarStatusObject);
         }
 
+        //TODO: add ednpoint for removing statuses from annoucement
+
         [HttpPost("{id}/equipment")]
-        [Authorize(Roles = "użytkownik")]
-        [Authorize(Roles = "admin")]
-        //TODO: chceck id of user
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult<Annoucement_CarStatus> AddEquipmentToAnnoucement([FromRoute] int id, [FromBody] CarEquipmentIdDto dto)
         {
             var annoucementCarEquipmentObject = _service.AddCarEquipmentToAnnoucement(id, dto);
             return Ok(annoucementCarEquipmentObject);
         }
 
+        //TODO: add ednpoint for removing equipment from annoucement
     }
 }
