@@ -21,6 +21,8 @@ namespace imotoAPI.Models
             TotalItemsCount = totalCount;
             ItemsFrom = pageSize * (pageNumber - 1) + 1;
             ItemsTo = ItemsFrom + pageSize - 1;
+            if (ItemsTo > TotalItemsCount)
+                ItemsTo = TotalItemsCount;
             TotalPages = (int)Math.Ceiling(totalCount / (double) pageSize);
         }
     }
