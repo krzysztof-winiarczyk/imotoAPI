@@ -33,6 +33,8 @@ namespace imotoAPI.Models
         public int? CarTransmissionId { get; set; }
         public string CarTransmissionSpare { get; set; }
 
+        public int? VoivodeshipId { get; set; }
+
         public int Price { get; set; }
         public int Mileage { get; set; }
         public string Description { get; set; }

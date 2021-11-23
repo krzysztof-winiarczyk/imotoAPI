@@ -36,6 +36,8 @@ namespace imotoAPI.Models
         public CarTransmission CarTransmission { get; set; }
         public string CarTransmissionSpare { get; set; }
 
+        public Voivodeship Voivodeship {get; set;}
+
         public int Price { get; set; }
         public int Mileage { get; set; }
         public string Description { get; set; }

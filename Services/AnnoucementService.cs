@@ -140,6 +140,7 @@ namespace imotoAPI.Services
                 .Include(a => a.CarFuel)
                 .Include(a => a.CarDrive)
                 .Include(a => a.CarTransmission)
+                .Include(a => a.Voivodeship)
                 .Where(a => a.AnnoucementStatusId == status.Id
                     && (
                         (carClassId == null || a.CarClassId == carClassId)
@@ -228,6 +229,7 @@ namespace imotoAPI.Services
                 dto.Price = a.Price;
                 dto.Mileage = a.Mileage;
                 dto.Description = a.Description;
+                dto.Voivodeship = a.Voivodeship;
 
                 dto.CarEquipment = GetCarEquipmentOfAnnoucement(a.Id);
                 dto.CarStatuses = GetCarStatusesOfAnnoucement(a.Id);
@@ -258,6 +260,7 @@ namespace imotoAPI.Services
                 .Include(a => a.CarFuel)
                 .Include(a => a.CarDrive)
                 .Include(a => a.CarTransmission)
+                .Include(a => a.Voivodeship)
                 .Where(a => a.AnnoucementStatusId == status.Id)
                 .FirstOrDefault(a => a.Id == id);
 
@@ -287,6 +290,7 @@ namespace imotoAPI.Services
             dto.Price = annocuement.Price;
             dto.Mileage = annocuement.Mileage;
             dto.Description = annocuement.Description;
+            dto.Voivodeship = annocuement.Voivodeship;
 
             dto.CarEquipment = GetCarEquipmentOfAnnoucement(annocuement.Id);
             dto.CarStatuses = GetCarStatusesOfAnnoucement(annocuement.Id);
@@ -318,13 +322,29 @@ namespace imotoAPI.Services
             annoucement.Mileage = dto.Mileage;
             annoucement.Description = dto.Description;
             annoucement.AnnoucementStatusId = status.Id;
-            //TODO: voivodeship
+            annoucement.VoivodeshipId = dto.VoivodeshipId;
 
             _dbContext.Add(annoucement);
             _dbContext.SaveChanges();
 
-            return annoucement;
-            //TODO: return annoucement with including all informations
+            int annoucementId = annoucement.Id;
+
+            var annoucementToReturn = _dbContext
+                .Annoucements
+                .Include(a => a.CarClass)
+                .Include(a => a.CarBrand)
+                .Include(a => a.CarModel)
+                .Include(a => a.CarColor)
+                .Include(a => a.CarBodywork)
+                .Include(a => a.CarCountry)
+                .Include(a => a.CarYear)
+                .Include(a => a.CarFuel)
+                .Include(a => a.CarDrive)
+                .Include(a => a.CarTransmission)
+                .Include(a => a.Voivodeship)
+                .FirstOrDefault(a => a.Id == annoucementId);
+
+            return annoucementToReturn;
         }
 
         public Annoucement EditAnnoucement(int id, AnnoucementGetDto dto)
@@ -357,12 +377,28 @@ namespace imotoAPI.Services
             annoucement.Price = dto.Price;
             annoucement.Mileage = dto.Mileage;
             annoucement.Description = dto.Description;
-            //TODO: voivodeship
+            annoucement.VoivodeshipId = dto.VoivodeshipId;
 
             _dbContext.SaveChanges();
 
-            return annoucement;
-            //TODO: return annoucement with including all informations
+            int annoucementId = annoucement.Id;
+
+            var annoucementToReturn = _dbContext
+                .Annoucements
+                .Include(a => a.CarClass)
+                .Include(a => a.CarBrand)
+                .Include(a => a.CarModel)
+                .Include(a => a.CarColor)
+                .Include(a => a.CarBodywork)
+                .Include(a => a.CarCountry)
+                .Include(a => a.CarYear)
+                .Include(a => a.CarFuel)
+                .Include(a => a.CarDrive)
+                .Include(a => a.CarTransmission)
+                .Include(a => a.Voivodeship)
+                .FirstOrDefault(a => a.Id == annoucementId);
+
+            return annoucementToReturn;
         }
 
         public void DeleteAnnoucement (int id)
