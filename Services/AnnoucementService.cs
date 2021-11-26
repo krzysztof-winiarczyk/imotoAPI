@@ -79,6 +79,13 @@ namespace imotoAPI.Services
         public Annoucement_CarStatus AddCarStatusToAnnoucement(int id, CarStatusIdDto dto);
 
         /// <summary>
+        /// delete carStatus from annoucement
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        public void DeleteCarStatusFromAnnoucement(int id, CarStatusIdDto dto);
+
+        /// <summary>
         /// add carEquipment to annoucement
         /// </summary>
         /// <param name="id"></param>
@@ -86,6 +93,12 @@ namespace imotoAPI.Services
         /// <returns></returns>
         public Annoucement_CarEquipment AddCarEquipmentToAnnoucement(int id, CarEquipmentIdDto dto);
 
+        /// <summary>
+        /// delete carEquipment from annoucement
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        public void DeleteCarEquipmentFromAnnoucement(int id, CarEquipmentIdDto dto);
     }
 
     public class AnnoucementService : IAnnoucementService
@@ -464,6 +477,32 @@ namespace imotoAPI.Services
             return annoucementCarStatusObject;
         }
 
+        public void DeleteCarStatusFromAnnoucement(int id, CarStatusIdDto dto)
+        {
+            var annoucement = _dbContext
+                .Annoucements
+                .FirstOrDefault(a => a.Id == id);
+
+            if (annoucement is null)
+                throw new NotFoundException("Not found");
+
+            //check if annoucement belongs to user invoking action or if user is admin
+            string userRole = _userContextService.GetUserRole;
+            int userId = _userContextService.GetUserId;
+            if (userRole == "użytkownik" && userId != annoucement.UserId)
+                throw new ForbidException("");
+
+            var annoucementCarStatus = _dbContext
+                .Annoucement_CarStatuses
+                .FirstOrDefault(acs => acs.AnnoucementId == id && acs.CarStatusId == dto.CarStatusId);
+
+            if (annoucementCarStatus is null)
+                throw new NotFoundException("Not found");
+
+            _dbContext.Annoucement_CarStatuses.Remove(annoucementCarStatus);
+            _dbContext.SaveChanges();
+        }
+
 
         public Annoucement_CarEquipment AddCarEquipmentToAnnoucement(int id, CarEquipmentIdDto dto)
         {
@@ -495,6 +534,32 @@ namespace imotoAPI.Services
             _dbContext.SaveChanges();
 
             return annoucementCarEquipmentObject;
+        }
+
+        public void DeleteCarEquipmentFromAnnoucement(int id, CarEquipmentIdDto dto)
+        {
+            var annoucement = _dbContext
+                .Annoucements
+                .FirstOrDefault(a => a.Id == id);
+
+            if (annoucement is null)
+                throw new NotFoundException("Not found");
+
+            //check if annoucement belongs to user invoking action or if user is admin
+            string userRole = _userContextService.GetUserRole;
+            int userId = _userContextService.GetUserId;
+            if (userRole == "użytkownik" && userId != annoucement.UserId)
+                throw new ForbidException("");
+
+            var announcementCarEquipment = _dbContext
+                .Annoucement_CarEquipments
+                .FirstOrDefault(ace => ace.AnnoucementId == id && ace.CarEquipmentId == dto.CarEquipmentId);
+
+            if (announcementCarEquipment is null)
+                throw new NotFoundException("Not found");
+
+            _dbContext.Annoucement_CarEquipments.Remove(announcementCarEquipment);
+            _dbContext.SaveChanges();
         }
 
 

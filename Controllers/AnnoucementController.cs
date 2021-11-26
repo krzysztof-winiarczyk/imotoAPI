@@ -107,7 +107,13 @@ namespace imotoAPI.Controllers
             return Ok(annoucementCarStatusObject);
         }
 
-        //TODO: add ednpoint for removing statuses from annoucement
+        [HttpDelete("{id}/status")]
+        [Authorize(Roles = "użytkownik, admin")]
+        public ActionResult RemoveStatusFromAnnoucement([FromRoute] int id, [FromBody] CarStatusIdDto dto)
+        {
+            _service.DeleteCarStatusFromAnnoucement(id, dto);
+            return Ok();
+        }
 
         [HttpPost("{id}/equipment")]
         [Authorize(Roles = "użytkownik, admin")]
@@ -117,6 +123,12 @@ namespace imotoAPI.Controllers
             return Ok(annoucementCarEquipmentObject);
         }
 
-        //TODO: add ednpoint for removing equipment from annoucement
+        [HttpDelete("{id}/equipment")]
+        [Authorize(Roles = "użytkownik, admin")]
+        public ActionResult RemoveEquipmentFromAnnoucement([FromRoute] int id, [FromBody] CarEquipmentIdDto dto)
+        {
+            _service.DeleteCarEquipmentFromAnnoucement(id, dto);
+            return Ok();
+        }
     }
 }
