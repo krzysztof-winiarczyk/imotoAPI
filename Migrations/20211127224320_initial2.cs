@@ -3,10 +3,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace imotoAPI.Migrations
 {
-    public partial class initial : Migration
+    public partial class initial2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AnnoucementStatuses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Editable = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnnoucementStatuses", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "CarBodyworks",
                 columns: table => new
@@ -158,17 +173,46 @@ namespace imotoAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ModeratorTypes",
+                name: "Images",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    FileName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ModeratorTypes", x => x.Id);
+                    table.PrimaryKey("PK_Images", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ModeratorStatuses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Editable = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ModeratorStatuses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserStatuses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Editable = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserStatuses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,13 +230,25 @@ namespace imotoAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Voivodeships",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Voivodeships", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CarModels",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    BrandId = table.Column<int>(type: "int", nullable: false),
-                    CarBrandId = table.Column<int>(type: "int", nullable: true),
+                    CarBrandId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false)
                 },
                 constraints: table =>
@@ -203,7 +259,7 @@ namespace imotoAPI.Migrations
                         column: x => x.CarBrandId,
                         principalTable: "CarBrands",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -212,7 +268,7 @@ namespace imotoAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
+                    ModeratorStatusId = table.Column<int>(type: "int", nullable: true),
                     Login = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -223,11 +279,11 @@ namespace imotoAPI.Migrations
                 {
                     table.PrimaryKey("PK_Moderators", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Moderators_ModeratorTypes_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "ModeratorTypes",
+                        name: "FK_Moderators_ModeratorStatuses_ModeratorStatusId",
+                        column: x => x.ModeratorStatusId,
+                        principalTable: "ModeratorStatuses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,21 +292,36 @@ namespace imotoAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
-                    UserTypeId = table.Column<int>(type: "int", nullable: true),
+                    UserTypeId = table.Column<int>(type: "int", nullable: false),
                     Login = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    PasswordHash = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    UserStatusId = table.Column<int>(type: "int", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: true),
+                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    HouseNumber = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
+                    ApartmentNumber = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
+                    PostalCode = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    WebAddress = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Users_UserStatuses_UserStatusId",
+                        column: x => x.UserStatusId,
+                        principalTable: "UserStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Users_UserTypes_UserTypeId",
                         column: x => x.UserTypeId,
                         principalTable: "UserTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -274,6 +345,8 @@ namespace imotoAPI.Migrations
                     CarDriveId = table.Column<int>(type: "int", nullable: true),
                     CarTransmissionId = table.Column<int>(type: "int", nullable: true),
                     CarTransmissionSpare = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: true),
+                    VoivodeshipId = table.Column<int>(type: "int", nullable: true),
+                    AnnoucementStatusId = table.Column<int>(type: "int", nullable: true),
                     Price = table.Column<int>(type: "int", nullable: false),
                     Mileage = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(511)", maxLength: 511, nullable: true)
@@ -281,6 +354,12 @@ namespace imotoAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Annoucements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Annoucements_AnnoucementStatuses_AnnoucementStatusId",
+                        column: x => x.AnnoucementStatusId,
+                        principalTable: "AnnoucementStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Annoucements_CarBodyworks_CarBodyworkId",
                         column: x => x.CarBodyworkId,
@@ -347,54 +426,12 @@ namespace imotoAPI.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EnterpriseUsers",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    HouseNumber = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
-                    ApartmentNumber = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
-                    PostalCode = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
-                    WebAddress = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EnterpriseUsers", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_EnterpriseUsers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
+                        name: "FK_Annoucements_Voivodeships_VoivodeshipId",
+                        column: x => x.VoivodeshipId,
+                        principalTable: "Voivodeships",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PrivateUsers",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
-                    Surname = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    HouseNumber = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
-                    ApartmentNumber = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PrivateUsers", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_PrivateUsers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -477,6 +514,32 @@ namespace imotoAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Annoucement_Images",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AnnoucementId = table.Column<int>(type: "int", nullable: false),
+                    ImageId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Annoucement_Images", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Annoucement_Images_Annoucements_AnnoucementId",
+                        column: x => x.AnnoucementId,
+                        principalTable: "Annoucements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Annoucement_Images_Images_ImageId",
+                        column: x => x.ImageId,
+                        principalTable: "Images",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WatchedAnnoucements",
                 columns: table => new
                 {
@@ -503,27 +566,6 @@ namespace imotoAPI.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Phones",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Number = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Phones", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Phones_EnterpriseUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "EnterpriseUsers",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Annoucement_CarEquipments_AnnoucementId",
                 table: "Annoucement_CarEquipments",
@@ -543,6 +585,21 @@ namespace imotoAPI.Migrations
                 name: "IX_Annoucement_CarStatuses_CarStatusId",
                 table: "Annoucement_CarStatuses",
                 column: "CarStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Annoucement_Images_AnnoucementId",
+                table: "Annoucement_Images",
+                column: "AnnoucementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Annoucement_Images_ImageId",
+                table: "Annoucement_Images",
+                column: "ImageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Annoucements_AnnoucementStatusId",
+                table: "Annoucements",
+                column: "AnnoucementStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Annoucements_CarBodyworkId",
@@ -600,19 +657,24 @@ namespace imotoAPI.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Annoucements_VoivodeshipId",
+                table: "Annoucements",
+                column: "VoivodeshipId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CarModels_CarBrandId",
                 table: "CarModels",
                 column: "CarBrandId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Moderators_TypeId",
+                name: "IX_Moderators_ModeratorStatusId",
                 table: "Moderators",
-                column: "TypeId");
+                column: "ModeratorStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Phones_UserId",
-                table: "Phones",
-                column: "UserId");
+                name: "IX_Users_UserStatusId",
+                table: "Users",
+                column: "UserStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_UserTypeId",
@@ -649,13 +711,10 @@ namespace imotoAPI.Migrations
                 name: "Annoucement_CarStatuses");
 
             migrationBuilder.DropTable(
+                name: "Annoucement_Images");
+
+            migrationBuilder.DropTable(
                 name: "Moderators");
-
-            migrationBuilder.DropTable(
-                name: "Phones");
-
-            migrationBuilder.DropTable(
-                name: "PrivateUsers");
 
             migrationBuilder.DropTable(
                 name: "WatchedAnnoucements");
@@ -670,13 +729,16 @@ namespace imotoAPI.Migrations
                 name: "CarStatuses");
 
             migrationBuilder.DropTable(
-                name: "ModeratorTypes");
+                name: "Images");
 
             migrationBuilder.DropTable(
-                name: "EnterpriseUsers");
+                name: "ModeratorStatuses");
 
             migrationBuilder.DropTable(
                 name: "Annoucements");
+
+            migrationBuilder.DropTable(
+                name: "AnnoucementStatuses");
 
             migrationBuilder.DropTable(
                 name: "CarBodyworks");
@@ -709,7 +771,13 @@ namespace imotoAPI.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
+                name: "Voivodeships");
+
+            migrationBuilder.DropTable(
                 name: "CarBrands");
+
+            migrationBuilder.DropTable(
+                name: "UserStatuses");
 
             migrationBuilder.DropTable(
                 name: "UserTypes");

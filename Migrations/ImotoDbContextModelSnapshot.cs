@@ -190,6 +190,28 @@ namespace imotoAPI.Migrations
                     b.ToTable("Annoucement_CarStatuses");
                 });
 
+            modelBuilder.Entity("imotoAPI.Entities.Annoucement_Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AnnoucementId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnnoucementId");
+
+                    b.HasIndex("ImageId");
+
+                    b.ToTable("Annoucement_Images");
+                });
+
             modelBuilder.Entity("imotoAPI.Entities.CarBodywork", b =>
                 {
                     b.Property<int>("Id")
@@ -423,6 +445,23 @@ namespace imotoAPI.Migrations
                     b.ToTable("CarYears");
                 });
 
+            modelBuilder.Entity("imotoAPI.Entities.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("imotoAPI.Entities.Moderator", b =>
                 {
                     b.Property<int>("Id")
@@ -458,14 +497,9 @@ namespace imotoAPI.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ModeratorStatusId");
-
-                    b.HasIndex("TypeId");
 
                     b.ToTable("Moderators");
                 });
@@ -492,24 +526,6 @@ namespace imotoAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ModeratorStatuses");
-                });
-
-            modelBuilder.Entity("imotoAPI.Entities.ModeratorType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ModeratorType");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.User", b =>
@@ -821,6 +837,25 @@ namespace imotoAPI.Migrations
                     b.Navigation("CarStatus");
                 });
 
+            modelBuilder.Entity("imotoAPI.Entities.Annoucement_Image", b =>
+                {
+                    b.HasOne("imotoAPI.Entities.Annoucement", "Annoucement")
+                        .WithMany()
+                        .HasForeignKey("AnnoucementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("imotoAPI.Entities.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Annoucement");
+
+                    b.Navigation("Image");
+                });
+
             modelBuilder.Entity("imotoAPI.Entities.CarModel", b =>
                 {
                     b.HasOne("imotoAPI.Entities.CarBrand", "CarBrand")
@@ -838,15 +873,7 @@ namespace imotoAPI.Migrations
                         .WithMany()
                         .HasForeignKey("ModeratorStatusId");
 
-                    b.HasOne("imotoAPI.Entities.ModeratorType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("ModeratorStatus");
-
-                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.User", b =>

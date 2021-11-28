@@ -10,8 +10,8 @@ using imotoAPI.Entities;
 namespace imotoAPI.Migrations
 {
     [DbContext(typeof(ImotoDbContext))]
-    [Migration("20211024135423_user_userType_constraint_fix")]
-    partial class user_userType_constraint_fix
+    [Migration("20211127224320_initial2")]
+    partial class initial2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,6 +27,9 @@ namespace imotoAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AnnoucementStatusId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("CarBodyworkId")
                         .HasColumnType("int");
@@ -87,7 +90,12 @@ namespace imotoAPI.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("VoivodeshipId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AnnoucementStatusId");
 
                     b.HasIndex("CarBodyworkId");
 
@@ -111,7 +119,33 @@ namespace imotoAPI.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("VoivodeshipId");
+
                     b.ToTable("Annoucements");
+                });
+
+            modelBuilder.Entity("imotoAPI.Entities.AnnoucementStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool?>("Editable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AnnoucementStatuses");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.Annoucement_CarEquipment", b =>
@@ -156,6 +190,28 @@ namespace imotoAPI.Migrations
                     b.HasIndex("CarStatusId");
 
                     b.ToTable("Annoucement_CarStatuses");
+                });
+
+            modelBuilder.Entity("imotoAPI.Entities.Annoucement_Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AnnoucementId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnnoucementId");
+
+                    b.HasIndex("ImageId");
+
+                    b.ToTable("Annoucement_Images");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.CarBodywork", b =>
@@ -391,46 +447,21 @@ namespace imotoAPI.Migrations
                     b.ToTable("CarYears");
                 });
 
-            modelBuilder.Entity("imotoAPI.Entities.EnterpriseUser", b =>
+            modelBuilder.Entity("imotoAPI.Entities.Image", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ApartmentNumber")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<string>("City")
+                    b.Property<string>("FileName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("HouseNumber")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
+                    b.HasKey("Id");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
-                    b.Property<string>("Street")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("WebAddress")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("EnterpriseUsers");
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.Moderator", b =>
@@ -450,6 +481,9 @@ namespace imotoAPI.Migrations
                         .HasMaxLength(45)
                         .HasColumnType("nvarchar(45)");
 
+                    b.Property<int?>("ModeratorStatusId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(45)
@@ -465,17 +499,14 @@ namespace imotoAPI.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("ModeratorStatusId");
 
                     b.ToTable("Moderators");
                 });
 
-            modelBuilder.Entity("imotoAPI.Entities.ModeratorType", b =>
+            modelBuilder.Entity("imotoAPI.Entities.ModeratorStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -486,46 +517,25 @@ namespace imotoAPI.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<bool?>("Editable")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ModeratorTypes");
+                    b.ToTable("ModeratorStatuses");
                 });
 
-            modelBuilder.Entity("imotoAPI.Entities.Phone", b =>
+            modelBuilder.Entity("imotoAPI.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Phones");
-                });
-
-            modelBuilder.Entity("imotoAPI.Entities.PrivateUser", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.Property<string>("ApartmentNumber")
                         .HasMaxLength(4)
@@ -536,64 +546,88 @@ namespace imotoAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("HouseNumber")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
-                    b.Property<string>("Street")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("PrivateUsers");
-                });
-
-            modelBuilder.Entity("imotoAPI.Entities.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("HouseNumber")
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(45)
                         .HasColumnType("nvarchar(45)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("Street")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Surname")
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)");
+
+                    b.Property<int?>("UserStatusId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserTypeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("WebAddress")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserStatusId");
 
                     b.HasIndex("UserTypeId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("imotoAPI.Entities.UserStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool?>("Editable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserStatuses");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.UserType", b =>
@@ -615,6 +649,23 @@ namespace imotoAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserTypes");
+                });
+
+            modelBuilder.Entity("imotoAPI.Entities.Voivodeship", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Voivodeships");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.WatchedAnnoucement", b =>
@@ -669,6 +720,10 @@ namespace imotoAPI.Migrations
 
             modelBuilder.Entity("imotoAPI.Entities.Annoucement", b =>
                 {
+                    b.HasOne("imotoAPI.Entities.AnnoucementStatus", "AnnoucementStatus")
+                        .WithMany()
+                        .HasForeignKey("AnnoucementStatusId");
+
                     b.HasOne("imotoAPI.Entities.CarBodywork", "CarBodywork")
                         .WithMany()
                         .HasForeignKey("CarBodyworkId");
@@ -715,6 +770,12 @@ namespace imotoAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("imotoAPI.Entities.Voivodeship", "Voivodeship")
+                        .WithMany()
+                        .HasForeignKey("VoivodeshipId");
+
+                    b.Navigation("AnnoucementStatus");
+
                     b.Navigation("CarBodywork");
 
                     b.Navigation("CarBrand");
@@ -736,6 +797,8 @@ namespace imotoAPI.Migrations
                     b.Navigation("CarYear");
 
                     b.Navigation("User");
+
+                    b.Navigation("Voivodeship");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.Annoucement_CarEquipment", b =>
@@ -776,6 +839,25 @@ namespace imotoAPI.Migrations
                     b.Navigation("CarStatus");
                 });
 
+            modelBuilder.Entity("imotoAPI.Entities.Annoucement_Image", b =>
+                {
+                    b.HasOne("imotoAPI.Entities.Annoucement", "Annoucement")
+                        .WithMany()
+                        .HasForeignKey("AnnoucementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("imotoAPI.Entities.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Annoucement");
+
+                    b.Navigation("Image");
+                });
+
             modelBuilder.Entity("imotoAPI.Entities.CarModel", b =>
                 {
                     b.HasOne("imotoAPI.Entities.CarBrand", "CarBrand")
@@ -787,57 +869,28 @@ namespace imotoAPI.Migrations
                     b.Navigation("CarBrand");
                 });
 
-            modelBuilder.Entity("imotoAPI.Entities.EnterpriseUser", b =>
-                {
-                    b.HasOne("imotoAPI.Entities.User", "User")
-                        .WithOne()
-                        .HasForeignKey("imotoAPI.Entities.EnterpriseUser", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("imotoAPI.Entities.Moderator", b =>
                 {
-                    b.HasOne("imotoAPI.Entities.ModeratorType", "Type")
+                    b.HasOne("imotoAPI.Entities.ModeratorStatus", "ModeratorStatus")
                         .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ModeratorStatusId");
 
-                    b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("imotoAPI.Entities.Phone", b =>
-                {
-                    b.HasOne("imotoAPI.Entities.EnterpriseUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("imotoAPI.Entities.PrivateUser", b =>
-                {
-                    b.HasOne("imotoAPI.Entities.User", "User")
-                        .WithOne()
-                        .HasForeignKey("imotoAPI.Entities.PrivateUser", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                    b.Navigation("ModeratorStatus");
                 });
 
             modelBuilder.Entity("imotoAPI.Entities.User", b =>
                 {
+                    b.HasOne("imotoAPI.Entities.UserStatus", "UserStatus")
+                        .WithMany()
+                        .HasForeignKey("UserStatusId");
+
                     b.HasOne("imotoAPI.Entities.UserType", "UserType")
                         .WithMany()
                         .HasForeignKey("UserTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserStatus");
 
                     b.Navigation("UserType");
                 });

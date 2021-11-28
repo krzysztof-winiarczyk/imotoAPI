@@ -37,6 +37,9 @@ namespace imotoAPI.Entities
         public DbSet<AnnoucementStatus> AnnoucementStatuses { get; set; }
         public DbSet<ModeratorStatus> ModeratorStatuses { get; set; }
 
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Annoucement_Image> Annoucement_Images {get; set;}
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +68,9 @@ namespace imotoAPI.Entities
             //Annoucement
             setFieldsOfAnnoucement(modelBuilder);
             setFieldsOfWatchedAnnoucement(modelBuilder);
+
+            //Images
+            SetFieldsOfImages(modelBuilder);
 
             //Voivodeship
             SetFieldsOfVoivodeship(modelBuilder);
@@ -406,6 +412,14 @@ namespace imotoAPI.Entities
             modelBuilder.Entity<ModeratorStatus>()
                 .Property(e => e.Editable)
                 .IsRequired(false);
+        }
+
+        private static void SetFieldsOfImages (ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Image>()
+                .Property(e => e.FileName)
+                .IsRequired(true)
+                .HasMaxLength(50);
         }
 
         protected override void OnConfiguring
