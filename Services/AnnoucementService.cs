@@ -221,7 +221,7 @@ namespace imotoAPI.Services
             {
                 var dto = new AnnoucementReturnDto();
                 dto.Id = a.Id;
-                dto.UserId = a.Id;
+                dto.UserId = a.UserId;
                 dto.CarClass = a.CarClass;
                 dto.CarBrand = a.CarBrand;
                 dto.CarBrandSpare = a.CarBrandSpare;
@@ -282,7 +282,7 @@ namespace imotoAPI.Services
 
             var dto = new AnnoucementReturnDto();
             dto.Id = annocuement.Id;
-            dto.UserId = annocuement.Id;
+            dto.UserId = annocuement.UserId;
             dto.CarClass = annocuement.CarClass;
             dto.CarBrand = annocuement.CarBrand;
             dto.CarBrandSpare = annocuement.CarBrandSpare;
