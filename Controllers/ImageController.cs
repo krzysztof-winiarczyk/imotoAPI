@@ -75,6 +75,28 @@ namespace imotoAPI.Controllers
             return BadRequest();
         }
 
-        //TODO: Delete endpoint
+        [HttpDelete]
+        [Authorize(Roles = "użytkownik, admin")]
+        public ActionResult Delete([FromQuery] string fileName)
+        {
+            //check DB
+            int resultCode = _imageService.CanDeleteImage(fileName);
+            if (resultCode == 404)
+                return NotFound();
+            if (resultCode == 403)
+                return Unauthorized();
+
+            //delete file
+            var rootPath = Directory.GetCurrentDirectory();
+            var filePath = $"{rootPath}/Images/{fileName}";
+            bool fileExists = System.IO.File.Exists(filePath);
+            if (fileExists)
+                System.IO.File.Delete(filePath);
+
+            //delete from DB
+            _imageService.DeletePhoto(fileName);
+
+            return Ok();
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using imotoAPI.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,9 @@ namespace imotoAPI.Services
     public interface IImageService
     {
         public void AddPhoto(int annoucementId, string fileName);
+        public void DeletePhoto(string imageName);
         public int CanSaveImage(int announcementId);
+        public int CanDeleteImage(string imageName);
     }
 
     public class ImageService : IImageService
@@ -56,6 +59,31 @@ namespace imotoAPI.Services
             return 200;
         }
 
+        public int CanDeleteImage(string imageName)
+        {
+            var image = _dbContext
+                .Images
+                .FirstOrDefault(i => i.FileName == imageName);
+
+            //No image
+            if (image == null)
+                return 404;
+
+            var annoucementImage = _dbContext
+                .Annoucement_Images
+                .Include(ai => ai.Annoucement)
+                .FirstOrDefault(ai => ai.ImageId == image.Id);
+
+            int userId = _userContextService.GetUserId;
+            string userRole = _userContextService.GetUserRole;
+
+            //Invoking user is not owner of announcement
+            if (userRole == "użytkownik" && userId != annoucementImage.Annoucement.UserId)
+                return 403;
+
+            return 200;
+        }
+
         public void AddPhoto(int annoucementId, string fileName)
         {
             var image = new Image
@@ -74,6 +102,19 @@ namespace imotoAPI.Services
 
             _dbContext.Annoucement_Images.Add(announcementImage);
             _dbContext.SaveChanges();
+        }
+
+        public void DeletePhoto(string imageName)
+        {
+            var image = _dbContext
+                .Images
+                .FirstOrDefault(i => i.FileName == imageName);
+
+            if (image is not null)
+            {
+                _dbContext.Remove(image);
+                _dbContext.SaveChanges();
+            }
         }
     }
 }
