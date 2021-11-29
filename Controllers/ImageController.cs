@@ -1,5 +1,6 @@
 ﻿using imotoAPI.Exceptions;
 using imotoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing.Constraints;
@@ -26,6 +27,7 @@ namespace imotoAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult GetFile([FromQuery] string fileName)
         {
             var rootPath = Directory.GetCurrentDirectory();
@@ -44,10 +46,17 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "użytkownik, admin")]
         public ActionResult Upload([FromQuery] int annoucementId, [FromForm] IFormFile file)
         {
-            //TODO: check if announcement of annoucementId exists
-            //TODO: chekc if uploading user is owmer of annoucement
+            int resultCode = _imageService.CanSaveImage(annoucementId);
+            if (resultCode == 404)
+                return NotFound();
+            if (resultCode == 403)
+                return Unauthorized();
+            if (resultCode == 409)
+                return Conflict("Limit of images added to annoucement is 5");
+
             if (file != null && file.Length > 0  && file.ContentType == "image/jpeg")
             {
                 var rootPath = Directory.GetCurrentDirectory();
@@ -65,5 +74,7 @@ namespace imotoAPI.Controllers
             }
             return BadRequest();
         }
+
+        //TODO: Delete endpoint
     }
 }
