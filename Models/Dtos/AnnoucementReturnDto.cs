@@ -46,6 +46,6 @@ namespace imotoAPI.Models
 
         public IEnumerable<CarStatus> CarStatuses { get; set; }
 
-
+        public IEnumerable<Image> Images { get; set; }
     }
 }

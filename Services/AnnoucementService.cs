@@ -246,6 +246,7 @@ namespace imotoAPI.Services
 
                 dto.CarEquipment = GetCarEquipmentOfAnnoucement(a.Id);
                 dto.CarStatuses = GetCarStatusesOfAnnoucement(a.Id);
+                dto.Images = GetImagesOfAnnoucement(a.Id);
 
                 annoucementsDto.Add(dto);
             }
@@ -307,6 +308,7 @@ namespace imotoAPI.Services
 
             dto.CarEquipment = GetCarEquipmentOfAnnoucement(annocuement.Id);
             dto.CarStatuses = GetCarStatusesOfAnnoucement(annocuement.Id);
+            dto.Images = GetImagesOfAnnoucement(annocuement.Id);
 
             return dto;
         }
@@ -599,6 +601,23 @@ namespace imotoAPI.Services
             }
 
             return carEquipment;
+        }
+
+        private List<Image> GetImagesOfAnnoucement(int annoucementId)
+        {
+            var annoucementImages = _dbContext
+                .Annoucement_Images
+                .Where(ai => ai.AnnoucementId == annoucementId)
+                .Include(ai => ai.Image)
+                .ToList();
+
+            List<Image> images = new();
+            foreach (Annoucement_Image ai in annoucementImages)
+            {
+                images.Add(ai.Image);
+            }
+
+            return images;
         }
 
         /// <summary>
