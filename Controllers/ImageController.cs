@@ -1,4 +1,5 @@
 ﻿using imotoAPI.Exceptions;
+using imotoAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing.Constraints;
@@ -17,6 +18,13 @@ namespace imotoAPI.Controllers
     [Controller]
     public class ImageController : ControllerBase
     {
+        private readonly IImageService _imageService;
+
+        public ImageController(IImageService imageService)
+        {
+            _imageService = imageService;
+        }
+
         [HttpGet]
         public ActionResult GetFile([FromQuery] string fileName)
         {
@@ -36,8 +44,10 @@ namespace imotoAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Upload([FromForm] IFormFile file)
+        public ActionResult Upload([FromQuery] int annoucementId, [FromForm] IFormFile file)
         {
+            //TODO: check if announcement of annoucementId exists
+            //TODO: chekc if uploading user is owmer of annoucement
             if (file != null && file.Length > 0  && file.ContentType == "image/jpeg")
             {
                 var rootPath = Directory.GetCurrentDirectory();
@@ -48,6 +58,8 @@ namespace imotoAPI.Controllers
                 {
                     file.CopyTo(stream);
                 }
+
+                _imageService.AddPhoto(annoucementId, fileName);
 
                 return Ok();
             }
