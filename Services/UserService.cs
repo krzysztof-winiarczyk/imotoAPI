@@ -23,7 +23,7 @@ namespace imotoAPI.Services
         public UserReturnDto GetById(int id);
         public void DeleteAccount(int id);
         public UserReturnForAdminDto Add(UserGetDto dto);
-        public string GenerateJwt(LoginDto dto);
+        public JwtDto GenerateJwt(LoginDto dto);
         public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
         public IEnumerable<AnnoucementReturnDto> GetWatchedAnnoucements(int id);
@@ -183,7 +183,7 @@ namespace imotoAPI.Services
             return returnDto;
         }
 
-        public string GenerateJwt(LoginDto dto)
+        public JwtDto GenerateJwt(LoginDto dto)
         {
             var user = _dbContext
                 .Users
@@ -217,7 +217,11 @@ namespace imotoAPI.Services
                 signingCredentials: credentials);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            return tokenHandler.WriteToken(token);
+            var jwtDto = new JwtDto
+            {
+                Token = tokenHandler.WriteToken(token)
+            };
+            return jwtDto;
         }
 
         public UserReturnForAdminDto UpdateContactInfo(int id, UserUpdateDto dto)

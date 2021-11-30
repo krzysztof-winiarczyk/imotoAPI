@@ -19,7 +19,7 @@ namespace imotoAPI.Services
         public IEnumerable<ModeratorReturnDto> GetAll();
         public ModeratorReturnDto GetById(int id);
         public ModeratorReturnDto Add(ModeratorGetDto dto);
-        public string GenerateJwt(LoginDto dto);
+        public JwtDto GenerateJwt(LoginDto dto);
         public ModeratorReturnDto UpdateContactInfo(int id, ModeratorUpdateDto dto);
         public void ChangePassword(int id, PasswordDto passwordDto);
         public ModeratorReturnDto ChangeStatus(int id, ModeratorStatusIdDto dto);
@@ -102,7 +102,7 @@ namespace imotoAPI.Services
             return returnDto;
         }
 
-        public string GenerateJwt(LoginDto dto)
+        public JwtDto GenerateJwt(LoginDto dto)
         {
             var moderator = _dbContext
                 .Moderators
@@ -133,7 +133,11 @@ namespace imotoAPI.Services
                 signingCredentials: credentials);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            return tokenHandler.WriteToken(token);
+            var jwtDto = new JwtDto
+            {
+                Token = tokenHandler.WriteToken(token)
+            };
+            return jwtDto;
         }
 
         public ModeratorReturnDto UpdateContactInfo(int id, ModeratorUpdateDto dto)

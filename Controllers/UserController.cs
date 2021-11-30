@@ -47,7 +47,7 @@ namespace imotoAPI.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public ActionResult Login([FromBody] LoginDto dto)
+        public ActionResult<JwtDto> Login([FromBody] LoginDto dto)
         {
             var token = _service.GenerateJwt(dto);
             return Ok(token);
