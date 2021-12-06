@@ -69,6 +69,14 @@ namespace imotoAPI.Controllers
             return Ok();
         }
 
+        [HttpGet("{id}/announcements")]
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<AnnoucementReturnDto>> GetAnnoucementsOfUser([FromRoute] int id)
+        {
+            var annoucementDtos = _service.GetAnnoucementsOfUser(id);
+            return Ok(annoucementDtos);
+        }
+
         [HttpGet("{id}/watchedAnnoucements")]
         [Authorize(Roles = "użytkownik, admin")]
         public ActionResult<IEnumerable<AnnoucementReturnDto>> GetWatchedAnnoucements([FromRoute] int id)
