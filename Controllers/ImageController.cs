@@ -61,7 +61,13 @@ namespace imotoAPI.Controllers
             {
                 var rootPath = Directory.GetCurrentDirectory();
                 var fileName = $"img{DateTime.Now.ToString("yyyyMMddHHmmssff")}.jpg";
+                var dirPath = $"{rootPath}/Images";
                 var fullPath = $"{rootPath}/Images/{fileName}";
+
+                //check if ./Images/ exists - if not create
+                DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
+                if (!dirInfo.Exists)
+                    dirInfo.Create();
 
                 using (var stream = new FileStream(fullPath, FileMode.Create))
                 {
