@@ -38,19 +38,22 @@ namespace imotoAPI.Services
         private readonly AuthenticationSettings _authenticationSettings;
         private readonly IAnnoucementService _annoucementService;
         private readonly IUserContextService _userContextService;
+        private readonly IAnnoucementServiceHelper _annoucementServiceHelper;
 
         public UserService(
             ImotoDbContext dbContext,
             IPasswordHasher<User> passwordHasher,
             AuthenticationSettings authenticationSettings,
             IAnnoucementService annoucementService,
-            IUserContextService userContextService)
+            IUserContextService userContextService,
+            IAnnoucementServiceHelper annoucementServiceHelper)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
             _annoucementService = annoucementService;
             _userContextService = userContextService;
+            _annoucementServiceHelper = annoucementServiceHelper;
         }
 
         //for admin
@@ -296,7 +299,7 @@ namespace imotoAPI.Services
             if (user is null)
                 throw new NotFoundException("Not found");
 
-            var status = GetAnnouncementActiveStatus();
+            var status = _annoucementServiceHelper.GetAnnouncementActiveStatus();
 
             var annocuements = _dbContext
                 .Annoucements
@@ -318,7 +321,7 @@ namespace imotoAPI.Services
 
             foreach (Annoucement a in annocuements)
             {
-                var dto = MapToReturnDto(a);
+                var dto = _annoucementServiceHelper.MapToReturnDto(a);
                 annoucementsDtos.Add(dto);
             }
 
@@ -434,103 +437,5 @@ namespace imotoAPI.Services
         }
 
 
-        //TODO: move to AnnoucementServiceHelper (?)
-        private AnnoucementStatus GetAnnouncementActiveStatus()
-        {
-            var status = _dbContext
-                .AnnoucementStatuses
-                .FirstOrDefault(s => s.Name == "aktualne");
-
-            return status;
-        }
-
-        private AnnoucementReturnDto MapToReturnDto(Annoucement annocuement)
-        {
-            var dto = new AnnoucementReturnDto();
-            dto.Id = annocuement.Id;
-            dto.UserId = annocuement.UserId;
-            dto.CarClass = annocuement.CarClass;
-            dto.CarBrand = annocuement.CarBrand;
-            dto.CarBrandSpare = annocuement.CarBrandSpare;
-            if (annocuement.CarModel is not null)
-            {
-                dto.CarModel = new CarModelReturnDto();
-                dto.CarModel.Id = annocuement.CarModel.Id;
-                dto.CarModel.Name = annocuement.CarModel.Name;
-            }
-            dto.CarModelSpare = annocuement.CarModelSpare;
-            dto.CarBodywork = annocuement.CarBodywork;
-            dto.CarCountry = annocuement.CarCountry;
-            dto.CarYear = annocuement.CarYear;
-            dto.CarFuel = annocuement.CarFuel;
-            dto.CarDrive = annocuement.CarDrive;
-            dto.CarTransmission = annocuement.CarTransmission;
-            dto.CarTransmissionSpare = annocuement.CarTransmissionSpare;
-            dto.Price = annocuement.Price;
-            dto.Mileage = annocuement.Mileage;
-            dto.Description = annocuement.Description;
-            dto.Voivodeship = annocuement.Voivodeship;
-
-            dto.CarEquipment = GetCarEquipmentOfAnnoucement(annocuement.Id);
-            dto.CarStatuses = GetCarStatusesOfAnnoucement(annocuement.Id);
-            dto.Images = GetImagesOfAnnoucement(annocuement.Id);
-
-            return dto;
-        }
-
-        private List<CarStatus> GetCarStatusesOfAnnoucement(int annoucementId)
-        {
-            var annoucementStatuses = _dbContext
-                .Annoucement_CarStatuses
-                .Where(cs => cs.AnnoucementId == annoucementId)
-                .ToList();
-
-            List<CarStatus> carStatuses = new();
-            foreach (Annoucement_CarStatus aCS in annoucementStatuses)
-            {
-                var status = _dbContext
-                    .CarStatuses
-                    .FirstOrDefault(cs => cs.Id == aCS.CarStatusId);
-                carStatuses.Add(status);
-            }
-
-            return carStatuses;
-        }
-
-        private List<CarEquipment> GetCarEquipmentOfAnnoucement(int annoucementId)
-        {
-            var annoucementEquipment = _dbContext
-                .Annoucement_CarEquipments
-                .Where(ce => ce.AnnoucementId == annoucementId)
-                .ToList();
-
-            List<CarEquipment> carEquipment = new();
-            foreach (Annoucement_CarEquipment aCE in annoucementEquipment)
-            {
-                var equipment = _dbContext
-                    .CarEquipment
-                    .FirstOrDefault(ce => ce.Id == aCE.CarEquipmentId);
-                carEquipment.Add(equipment);
-            }
-
-            return carEquipment;
-        }
-
-        private List<Image> GetImagesOfAnnoucement(int annoucementId)
-        {
-            var annoucementImages = _dbContext
-                .Annoucement_Images
-                .Where(ai => ai.AnnoucementId == annoucementId)
-                .Include(ai => ai.Image)
-                .ToList();
-
-            List<Image> images = new();
-            foreach (Annoucement_Image ai in annoucementImages)
-            {
-                images.Add(ai.Image);
-            }
-
-            return images;
-        }
     }
 }

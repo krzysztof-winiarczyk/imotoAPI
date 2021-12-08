@@ -105,13 +105,16 @@ namespace imotoAPI.Services
     {
         private readonly ImotoDbContext _dbContext;
         private readonly IUserContextService _userContextService;
+        private readonly IAnnoucementServiceHelper _helper;
 
         public AnnoucementService(
             ImotoDbContext dbContext,
-            IUserContextService userContextService)
+            IUserContextService userContextService,
+            IAnnoucementServiceHelper helper)
         {
             _dbContext = dbContext;
             _userContextService = userContextService;
+            _helper = helper;
         }
 
         
@@ -136,7 +139,7 @@ namespace imotoAPI.Services
             SortQuerry sortQuerry)
         {
 
-            var status = GetActiveStatus();
+            var status = _helper.GetAnnouncementActiveStatus();
 
             int? yearStartId = GetIdOfYear(yearStart);
             int? yearEndId = GetIdOfYear(yearEnd);
@@ -260,7 +263,7 @@ namespace imotoAPI.Services
         
         public AnnoucementReturnDto GetById(int id)
         {
-            var status = GetActiveStatus();
+            var status = _helper.GetAnnouncementActiveStatus();
 
             var annocuement = _dbContext
                 .Annoucements
@@ -281,41 +284,13 @@ namespace imotoAPI.Services
             if (annocuement is null)
                 throw new NotFoundException("Not found");
 
-            var dto = new AnnoucementReturnDto();
-            dto.Id = annocuement.Id;
-            dto.UserId = annocuement.UserId;
-            dto.CarClass = annocuement.CarClass;
-            dto.CarBrand = annocuement.CarBrand;
-            dto.CarBrandSpare = annocuement.CarBrandSpare;
-            if (annocuement.CarModel is not null)
-            {
-                dto.CarModel = new CarModelReturnDto();
-                dto.CarModel.Id = annocuement.CarModel.Id;
-                dto.CarModel.Name = annocuement.CarModel.Name;
-            }
-            dto.CarModelSpare = annocuement.CarModelSpare;
-            dto.CarBodywork = annocuement.CarBodywork;
-            dto.CarCountry = annocuement.CarCountry;
-            dto.CarYear = annocuement.CarYear;
-            dto.CarFuel = annocuement.CarFuel;
-            dto.CarDrive = annocuement.CarDrive;
-            dto.CarTransmission = annocuement.CarTransmission;
-            dto.CarTransmissionSpare = annocuement.CarTransmissionSpare;
-            dto.Price = annocuement.Price;
-            dto.Mileage = annocuement.Mileage;
-            dto.Description = annocuement.Description;
-            dto.Voivodeship = annocuement.Voivodeship;
-
-            dto.CarEquipment = GetCarEquipmentOfAnnoucement(annocuement.Id);
-            dto.CarStatuses = GetCarStatusesOfAnnoucement(annocuement.Id);
-            dto.Images = GetImagesOfAnnoucement(annocuement.Id);
-
+            var dto = _helper.MapToReturnDto(annocuement);
             return dto;
         }
         
         public Annoucement AddAnnoucement(AnnoucementGetDto dto)
         {
-            var status = GetActiveStatus();
+            var status = _helper.GetAnnouncementActiveStatus();
 
             var annoucement = new Annoucement();
             annoucement.UserId = _userContextService.GetUserId;
@@ -432,7 +407,7 @@ namespace imotoAPI.Services
                 throw new ForbidException("");
 
             //set status for annoucement
-            var statusDeleted = GetDeletedStatus();
+            var statusDeleted = _helper.GetAnnoucementDeletedStatus();
             annoucement.AnnoucementStatusId = statusDeleted.Id;
             annoucement.AnnoucementStatus = statusDeleted;
 
@@ -618,32 +593,6 @@ namespace imotoAPI.Services
             }
 
             return images;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>status witch name is "aktualne"</returns>
-        private AnnoucementStatus GetActiveStatus()
-        {
-            var status = _dbContext
-                .AnnoucementStatuses
-                .FirstOrDefault(s => s.Name == "aktualne");
-
-            return status;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>status witch name is "usunięte"</returns>
-        private AnnoucementStatus GetDeletedStatus()
-        {
-            var status = _dbContext
-                .AnnoucementStatuses
-                .FirstOrDefault(s => s.Name == "usunięte");
-
-            return status;
         }
 
         private int? GetIdOfYear(int? year)
