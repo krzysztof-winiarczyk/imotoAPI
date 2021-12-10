@@ -9,8 +9,11 @@ namespace imotoAPI.Entities
 {
     public class ImotoDbContext : DbContext
     {
-        private string _connectionString =
-            "Server=LAPTOP-NPDMISHQ;Database=imotoDb;Trusted_Connection=True;";
+        
+        public ImotoDbContext(DbContextOptions<ImotoDbContext> options) : base(options)
+        {
+            
+        }
 
         public DbSet<Annoucement> Annoucements { get; set; }
         public DbSet<Annoucement_CarEquipment> Annoucement_CarEquipments { get; set; }
@@ -422,10 +425,5 @@ namespace imotoAPI.Entities
                 .HasMaxLength(50);
         }
 
-        protected override void OnConfiguring
-            (DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_connectionString);
-        }
     }
 }

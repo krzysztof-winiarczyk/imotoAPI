@@ -1,5 +1,6 @@
 ﻿using imotoAPI.Entities;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,13 @@ namespace imotoAPI
         {
             if (_dbContext.Database.CanConnect())
             {
+                //applying pending migartions
+                var pendingMigrations = _dbContext.Database.GetPendingMigrations();
+                if (pendingMigrations != null && pendingMigrations.Any())
+                {
+                    _dbContext.Database.Migrate();
+                }
+
                 if (!_dbContext.AnnoucementStatuses.Any())
                 {
                     var annoucementStatuses = GetAnnoucementStatuses();
