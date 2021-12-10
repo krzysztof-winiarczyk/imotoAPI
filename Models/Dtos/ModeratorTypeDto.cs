@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace imotoAPI.Models
 {
+    //TODO: delete
     public class ModeratorTypeDto
     {
         public string Name { get; set; }

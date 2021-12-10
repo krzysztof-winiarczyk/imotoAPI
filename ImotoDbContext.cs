@@ -162,16 +162,16 @@ namespace imotoAPI.Entities
             modelBuilder.Entity<CarClass>()
                 .Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(3);
+                .HasMaxLength(45);
 
             modelBuilder.Entity<CarClass>()
-               .Property(e => e.Name)
+               .Property(e => e.Description)
                .HasMaxLength(255);
         }
 
         private static void setFieldsOfCarColor(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CarBodywork>()
+            modelBuilder.Entity<CarColor>()
                 .Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(45);
