@@ -41,6 +41,9 @@ namespace imotoAPI.Services
                 .CarBrands
                 .FirstOrDefault(cb => cb.Id == id);
 
+            if (carBrand is null)
+                throw new NotFoundException("Not found");
+
             var carBrandWithModels = new CarBrandWithModelsDto();
             carBrandWithModels.Id = carBrand.Id;
             carBrandWithModels.Name = carBrand.Name;
