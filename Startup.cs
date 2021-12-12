@@ -107,6 +107,7 @@ namespace imoto
             services.AddScoped<ImotoSeeder>();
 
             services.AddScoped<ErrorHandlingMiddleware>();
+            services.AddResponseCaching();
 
             services.AddScoped<ICarFuelService, CarFuelService>();
             services.AddScoped<ICarClassService, CarClassService>();
@@ -158,6 +159,7 @@ namespace imoto
             }
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseResponseCaching();
             app.UseAuthentication();
             app.UseHttpsRedirection();
 
