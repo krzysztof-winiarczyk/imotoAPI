@@ -159,7 +159,7 @@ namespace imoto
             }
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
-            app.UseResponseCaching();
+            
             app.UseAuthentication();
             app.UseHttpsRedirection();
 
@@ -171,6 +171,8 @@ namespace imoto
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
+
+            app.UseResponseCaching();
 
             app.UseAuthorization();
 
