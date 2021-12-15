@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace imotoAPI.Models
@@ -38,6 +39,7 @@ namespace imotoAPI.Models
 
         public Voivodeship Voivodeship {get; set;}
 
+        public int? Capacity { get; set; }
         public int Price { get; set; }
         public int Mileage { get; set; }
         public string Description { get; set; }

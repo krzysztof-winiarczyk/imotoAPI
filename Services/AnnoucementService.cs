@@ -242,6 +242,7 @@ namespace imotoAPI.Services
                 dto.CarDrive = a.CarDrive;
                 dto.CarTransmission = a.CarTransmission;
                 dto.CarTransmissionSpare = a.CarTransmissionSpare;
+                dto.Capacity = a.Capacity;
                 dto.Price = a.Price;
                 dto.Mileage = a.Mileage;
                 dto.Description = a.Description;
@@ -308,6 +309,7 @@ namespace imotoAPI.Services
             annoucement.CarDriveId = dto.CarDriveId;
             annoucement.CarTransmissionId = dto.CarTransmissionId;
             annoucement.CarTransmissionSpare = dto.CarTransmissionSpare;
+            annoucement.Capacity = dto.Capacity;
             annoucement.Price = dto.Price;
             annoucement.Mileage = dto.Mileage;
             annoucement.Description = dto.Description;
@@ -364,6 +366,7 @@ namespace imotoAPI.Services
             annoucement.CarDriveId = dto.CarDriveId;
             annoucement.CarTransmissionId = dto.CarTransmissionId;
             annoucement.CarTransmissionSpare = dto.CarTransmissionSpare;
+            annoucement.Capacity = dto.Capacity;
             annoucement.Price = dto.Price;
             annoucement.Mileage = dto.Mileage;
             annoucement.Description = dto.Description;

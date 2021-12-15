@@ -64,6 +64,7 @@ namespace imotoAPI.Services
             dto.CarDrive = annocuement.CarDrive;
             dto.CarTransmission = annocuement.CarTransmission;
             dto.CarTransmissionSpare = annocuement.CarTransmissionSpare;
+            dto.Capacity = annocuement.Capacity;
             dto.Price = annocuement.Price;
             dto.Mileage = annocuement.Mileage;
             dto.Description = annocuement.Description;

@@ -56,6 +56,8 @@ namespace imotoAPI.Models
         
         public int? VoivodeshipId { get; set; }
 
+        [Range(1, 12000, ErrorMessage = "Capacity must be in range 1-12000")]
+        public int? Capacity { get; set; }
 
         [Required(ErrorMessage = "Price must not be empty")]
         public int Price { get; set; }

@@ -52,6 +52,7 @@ namespace imotoAPI.Entities
         public int? AnnoucementStatusId { get; set; }
         public virtual AnnoucementStatus AnnoucementStatus { get; set; }
 
+        public int? Capacity { get; set; }
         public int Price { get; set; }
         public int Mileage { get; set; }
         public string Description { get; set; }
