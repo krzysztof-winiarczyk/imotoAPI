@@ -1,4 +1,5 @@
 ﻿using imotoAPI.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,10 +12,12 @@ namespace imotoAPI
     public class ImotoSeeder
     {
         private readonly ImotoDbContext _dbContext;
+        private readonly IPasswordHasher<Moderator> _passwordHasher;
 
-        public ImotoSeeder(ImotoDbContext dbContext)
+        public ImotoSeeder(ImotoDbContext dbContext, IPasswordHasher<Moderator> passwordHasher)
         {
             _dbContext = dbContext;
+            _passwordHasher = passwordHasher;
         }
 
         public void Seed()
@@ -58,7 +61,7 @@ namespace imotoAPI
 
                 if (!_dbContext.CarYears.Any())
                 {
-                    for (int i=1990; i<=2025; i++)
+                    for (int i = 1990; i <= 2025; i++)
                     {
                         var year = new CarYear()
                         {
@@ -68,6 +71,13 @@ namespace imotoAPI
                         _dbContext.CarYears.Add(year);
                         _dbContext.SaveChanges();
                     }
+                }
+
+                if (!_dbContext.Moderators.Any())
+                {
+                    var moderators = GetModerators();
+                    _dbContext.Moderators.AddRange(moderators);
+                    _dbContext.SaveChanges();
                 }
             }
         }
@@ -218,6 +228,27 @@ namespace imotoAPI
             };
 
             return voivodeships;
+        }
+
+        private IEnumerable<Moderator> GetModerators()
+        {
+            var adminStatus = _dbContext.ModeratorStatuses.FirstOrDefault(s => s.Name == "admin");
+            var admin = new Moderator()
+            {
+                ModeratorStatusId = adminStatus.Id,
+                Login = "admin",
+                Email = "admin@example.com",
+                Name = "admin",
+                PhoneNumber = "111111111"
+            };
+            var passwordHash = _passwordHasher.HashPassword(admin, "admin");
+            admin.PasswordHash = passwordHash;
+
+            var moderators = new List<Moderator>();
+            moderators.Add(admin);
+            
+            return moderators;
+
         }
     }
 }

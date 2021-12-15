@@ -404,7 +404,7 @@ namespace imotoAPI.Services
             string userRole = _userContextService.GetUserRole;
             int userId = _userContextService.GetUserId;
             if (userRole == "użytkownik" && userId != annoucement.UserId)
-                throw new ForbidException("");
+                throw new ForbidException("Action denied");
 
             //set status for annoucement
             var statusDeleted = _helper.GetAnnoucementDeletedStatus();
