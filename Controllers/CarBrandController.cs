@@ -40,7 +40,7 @@ namespace imotoAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin, moderator treści")]
-        public ActionResult<CarBrand> AddCarBrand(CarBrandDto dto)
+        public ActionResult<CarBrand> AddCarBrand([FromBody] CarBrandDto dto)
         {
             var carBrand = _carBrandService.Add(dto);
             return Ok(carBrand);
@@ -48,7 +48,7 @@ namespace imotoAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "admin, moderator treści")]
-        public ActionResult<CarBrand> EditCarBrand(int id, CarBrandDto dto)
+        public ActionResult<CarBrand> EditCarBrand([FromRoute] int id, [FromBody] CarBrandDto dto)
         {
             var carBrand = _carBrandService.Edit(id, dto);
             return Ok(carBrand);
