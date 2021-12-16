@@ -112,6 +112,9 @@ namespace imotoAPI.Services
             if (moderator is null)
                 throw new IncorrectLoggingException("Incorrect login or password");
 
+            if (moderator.ModeratorStatusId == _dbContext.ModeratorStatuses.FirstOrDefault(s => s.Name == "dezaktywowane").Id)
+                throw new IncorrectLoggingException("Incorrect login or password");
+
             var result = _passwordHasher.VerifyHashedPassword(moderator, moderator.PasswordHash, dto.Password);
             if (result == PasswordVerificationResult.Failed)
                 throw new IncorrectLoggingException("Incorrect login or password");
