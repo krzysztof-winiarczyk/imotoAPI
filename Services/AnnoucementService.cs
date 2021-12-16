@@ -43,6 +43,13 @@ namespace imotoAPI.Services
             SortQuerry sortQuerry);
 
         /// <summary>
+        /// Returns annoucements with delivered status
+        /// </summary>
+        /// <param name="annoucementStatusId"></param>
+        /// <returns></returns>
+        public IEnumerable<AnnoucementReturnDto> GetAnnoucementsWithStatus(int annoucementStatusId);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="id">id of annoucement</param>
@@ -259,6 +266,68 @@ namespace imotoAPI.Services
             PageResult<AnnoucementReturnDto> result = new (annoucementsDto, totalItemsCount, paginationQuerry.PageSize, paginationQuerry.PageNumber);
 
             return result;
+        }
+
+        public IEnumerable<AnnoucementReturnDto> GetAnnoucementsWithStatus(int annoucementStatusId)
+        {
+            var annoucementStatus = _dbContext.AnnoucementStatuses.FirstOrDefault(s => s.Id == annoucementStatusId);
+            if (annoucementStatus is null)
+                throw new NotFoundException("Not found");
+
+            var annoucements = _dbContext
+                .Annoucements
+                .Include(a => a.CarClass)
+                .Include(a => a.CarBrand)
+                .Include(a => a.CarModel)
+                .Include(a => a.CarColor)
+                .Include(a => a.CarBodywork)
+                .Include(a => a.CarCountry)
+                .Include(a => a.CarYear)
+                .Include(a => a.CarFuel)
+                .Include(a => a.CarDrive)
+                .Include(a => a.CarTransmission)
+                .Include(a => a.Voivodeship)
+                .Where(a => a.AnnoucementStatusId == annoucementStatusId)
+                .ToList();
+
+            var annoucementsDto = new List<AnnoucementReturnDto>();
+
+            foreach (Annoucement a in annoucements)
+            {
+                var dto = new AnnoucementReturnDto();
+                dto.Id = a.Id;
+                dto.UserId = a.UserId;
+                dto.CarClass = a.CarClass;
+                dto.CarBrand = a.CarBrand;
+                dto.CarBrandSpare = a.CarBrandSpare;
+                if (a.CarModel is not null)
+                {
+                    dto.CarModel = new CarModelReturnDto();
+                    dto.CarModel.Id = a.CarModel.Id;
+                    dto.CarModel.Name = a.CarModel.Name;
+                }
+                dto.CarModelSpare = a.CarModelSpare;
+                dto.CarBodywork = a.CarBodywork;
+                dto.CarCountry = a.CarCountry;
+                dto.CarYear = a.CarYear;
+                dto.CarFuel = a.CarFuel;
+                dto.CarDrive = a.CarDrive;
+                dto.CarTransmission = a.CarTransmission;
+                dto.CarTransmissionSpare = a.CarTransmissionSpare;
+                dto.Capacity = a.Capacity;
+                dto.Price = a.Price;
+                dto.Mileage = a.Mileage;
+                dto.Description = a.Description;
+                dto.Voivodeship = a.Voivodeship;
+
+                dto.CarEquipment = GetCarEquipmentOfAnnoucement(a.Id);
+                dto.CarStatuses = GetCarStatusesOfAnnoucement(a.Id);
+                dto.Images = GetImagesOfAnnoucement(a.Id);
+
+                annoucementsDto.Add(dto);
+            }
+
+            return annoucementsDto;
         }
 
         

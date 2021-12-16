@@ -67,6 +67,15 @@ namespace imotoAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("status/{id}")]
+        [Authorize(Roles = "admin")]
+        public ActionResult<IEnumerable<AnnoucementReturnDto>> GetAnnoucementsWithStatus([FromRoute] int id)
+        {
+            var result = _service.GetAnnoucementsWithStatus(id);
+            return Ok(result);
+        }
+
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         public ActionResult<IEnumerable<AnnoucementReturnDto>> GetById([FromRoute] int id)
