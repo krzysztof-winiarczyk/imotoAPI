@@ -50,6 +50,8 @@ namespace imotoAPI.Services
             dto.CarClass = annocuement.CarClass;
             dto.CarBrand = annocuement.CarBrand;
             dto.CarBrandSpare = annocuement.CarBrandSpare;
+            dto.CarColor = annocuement.CarColor;
+            dto.CarColorSpare = annocuement.CarColorSpare;
             if (annocuement.CarModel is not null)
             {
                 dto.CarModel = new CarModelReturnDto();
