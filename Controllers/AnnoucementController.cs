@@ -84,6 +84,21 @@ namespace imotoAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("random")]
+        [AllowAnonymous]
+        public ActionResult GetRandom([FromQuery] CriteriaQuerry criteriaQuerry)
+        {
+            if (criteriaQuerry.IsValid())
+            {
+                var annoucements = _service.GetRandom(criteriaQuerry);
+                return Ok(annoucements);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "użytkownik")]
         public ActionResult<Annoucement> AddAnnoucement([FromBody] AnnoucementGetDto dto)

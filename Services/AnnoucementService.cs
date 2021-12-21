@@ -2,6 +2,7 @@
 using imotoAPI.Exceptions;
 using imotoAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -55,6 +56,13 @@ namespace imotoAPI.Services
         /// <param name="id">id of annoucement</param>
         /// <returns>active annoucement of id</returns>
         public AnnoucementReturnDto GetById(int id);
+
+        /// <summary>
+        /// Returns random annoucements which are meeting the criteria in querry
+        /// </summary>
+        /// <param name="querry"></param>
+        /// <returns></returns>
+        public PageResult<AnnoucementReturnDto> GetRandom(CriteriaQuerry querry);
 
         /// <summary>
         /// create annoucement from dto and add to DataBase
@@ -360,6 +368,85 @@ namespace imotoAPI.Services
             return dto;
         }
         
+        public PageResult<AnnoucementReturnDto> GetRandom(CriteriaQuerry querry)
+        {
+            var dtoCollection = new List<AnnoucementReturnDto>();
+            var annoucements = new List<Annoucement>();
+            var status = _helper.GetAnnouncementActiveStatus();
+            int howMany = 12;
+            var baseQuerry = _dbContext
+                        .Annoucements
+                        .Include(a => a.CarClass)
+                        .Include(a => a.CarBrand)
+                        .Include(a => a.CarModel)
+                        .Include(a => a.CarColor)
+                        .Include(a => a.CarBodywork)
+                        .Include(a => a.CarCountry)
+                        .Include(a => a.CarYear)
+                        .Include(a => a.CarFuel)
+                        .Include(a => a.CarDrive)
+                        .Include(a => a.CarTransmission)
+                        .Include(a => a.Voivodeship);
+
+            switch (querry.Criterion)
+            {
+                case "country":
+                    annoucements = baseQuerry
+                        .Where(a => a.AnnoucementStatusId == status.Id
+                        && a.CarCountry.Name.ToLower() == querry.Condition)
+                        .ToList();
+                    break;
+                case "fuel":
+                    annoucements = baseQuerry
+                        .Where(a => a.AnnoucementStatusId == status.Id
+                        && a.CarFuel.Name.ToLower() == querry.Condition)
+                        .ToList();
+                    break;
+                case "maxPrice":
+                    annoucements = baseQuerry
+                        .Where(a => a.AnnoucementStatusId == status.Id
+                        && a.Price <= Int32.Parse(querry.Condition))
+                        .ToList();
+                    break;
+            }
+
+            if (annoucements.Count <= howMany)
+            {
+                //without draw
+
+                //mapping
+                foreach(Annoucement a in annoucements)
+                {
+                    var dto = _helper.MapToReturnDto(a);
+                    dtoCollection.Add(dto);
+                }
+            }
+            else
+            {
+                //with draw
+                var lotteryMachine = new LotteryMachine();
+                var drawnIndexes = lotteryMachine.Draw(howMany, annoucements.Count);
+
+                //getting annoucements whitch are drown
+                var drawnAnnoucements = new List<Annoucement>();
+                for (int i=0; i<drawnIndexes.Count; i++)
+                {
+                    int index = drawnIndexes[i];
+                    drawnAnnoucements.Add(annoucements[index]);
+                }
+                
+                //mapping
+                foreach(Annoucement a in drawnAnnoucements)
+                {
+                    var dto = _helper.MapToReturnDto(a);
+                    dtoCollection.Add(dto);
+                }
+            }
+
+            PageResult<AnnoucementReturnDto> result = new(dtoCollection, dtoCollection.Count, howMany, 1);
+            return result;
+        }
+
         public Annoucement AddAnnoucement(AnnoucementGetDto dto)
         {
             var status = _helper.GetAnnouncementActiveStatus();
