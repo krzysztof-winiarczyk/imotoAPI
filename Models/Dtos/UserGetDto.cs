@@ -51,7 +51,7 @@ namespace imotoAPI.Models
         public string PostalCode { get; set; }
 
         [Required(ErrorMessage = "PhoneNumber is required")]
-        [MaxLength(11, ErrorMessage = "PhoneNumber is too long")]
+        [MaxLength(12, ErrorMessage = "PhoneNumber is too long")]
         [RegularExpression(@"^[01-9\+]*$", ErrorMessage = "Phone number not valid")]
         public string PhoneNumber { get; set; }
 

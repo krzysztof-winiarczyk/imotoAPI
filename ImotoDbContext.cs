@@ -350,7 +350,7 @@ namespace imotoAPI.Entities
             modelBuilder.Entity<User>()
                 .Property(e => e.PhoneNumber)
                 .IsRequired()
-                .HasMaxLength(11);
+                .HasMaxLength(12);
 
             modelBuilder.Entity<User>()
                 .Property(e => e.WebAddress)
